@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Staff To-Do List</title>
+  <link href="todo.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+  <h1>📝 Staff To-Do List</h1>
+
+  <div class="role-info">
+    Logged in as: <strong id="username"></strong>
+  </div>
+
+  <!-- Auto-refresh controls (hidden) -->
+  <div id="autoRefreshControls" style="margin-top:.5rem; display:none;">
+    <label><input type="checkbox" id="autoRefreshEnable"> Auto-refresh</label>
+    <label style="margin-left:.5rem;">Every <input type="number" id="autoRefreshSeconds" min="5" value="30" style="width:4rem;"> seconds</label>
+    <small style="margin-left:.5rem; color:#666;">(saved in this browser)</small>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <label for="filterStatus">Status:</label>
+    <select id="filterStatus">
+      <option value="all">All</option>
+      <option value="completed">Completed</option>
+      <option value="incomplete">Incomplete</option>
+    </select>
+
+    <label for="filterAssignee">Assignee:</label>
+    <select id="filterAssignee">
+      <option value="all">All</option>
+    </select>
+  </div>
+
+  <!-- Add Task Form (visible only to HR/HoD) -->
+  <div class="task-form" id="taskForm" style="display: none;">
+    <input type="text" id="taskText" placeholder="Enter task" />
+    <input type="date" id="dueDate" title="Optional due date" style="margin-left:.5rem;" />
+    <select id="assigneeSelect">
+      <option value="">Assign to...</option>
+      <option value="Everybody">Everybody</option>
+      <option value="HR Team">HR</option>
+      <option value="Exam Team">Exam</option>
+      <option value="Maths Team">Maths</option>
+      <option value="English Team">English</option>
+      <option value="Science Team">Science</option>
+      <option value="History Team">History</option>
+      <option value="Geography Team">Geography</option>
+      <option value="IT Team">IT</option>
+      <option value="Art Team">Art</option>
+      <option value="Music Team">Music</option>
+      <option value="Sports Team">Sports</option>
+      <option value="Music Team">Music</option>
+      <option value="ALN Team">ALN</option>
+    </select>
+    <button onclick="addTask()">Add Task</button>
+  </div>
+
+  <!-- Task Lists -->
+  <div class="task-lists">
+    <section class="incomplete-section">
+      <h2>Incomplete Tasks</h2>
+      <div class="task-list" id="incompleteList"></div>
+    </section>
+    <section class="overdue-section">
+      <h2>Overdue Tasks</h2>
+      <div class="task-list" id="overdueList"></div>
+    </section>
+    <section class="completed-section">
+      <h2>Completed Tasks</h2>
+      <div class="task-list" id="completedList"></div>
+    </section>
+  </div>
+
+  <!-- Debug pane -->
+  <div id="debug" style="margin-top:1rem; padding:0.5rem; border:1px dashed #ccc; font-family:monospace; white-space:pre-wrap; display:none;"></div>
+  <button id="testApiBtn" style="margin-top:.5rem; display:none;">Test API (raw)</button>
+
+  <script>
+  const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbx5D1Ue49u80-Aj5QCXkFU_e-gqY89jr2ntALF_DD2H15Tvm5oh0ZujBihr2oOnEkXf/exec";
+
+  // Defensive sessionStorage reads - fallbacks for testing/local use
+  const rawName = sessionStorage.getItem("fullName") || "Jane";
+  const rawRole = sessionStorage.getItem("userRole") || "staff"; // default to staff for safety
+
+  // Normalize role values
+  const normalizeRole = r => {
+    if (!r) return "Staff";
+    const s = r.toString().trim().toLowerCase();
+    if (s === "admin" || s === "hr") return "HR";
+    if (s === "hod" || s === "head of department" || s === "ho d") return "HoD";
+    return "Staff";
+  };
+
+  const currentUser = {
+    name: rawName,
+    role: normalizeRole(rawRole)
+  };
+
+  document.getElementById("username").innerText = `${currentUser.name} (${currentUser.role})`;
+
+  const incompleteListEl = document.getElementById("incompleteList");
+  const completedListEl = document.getElementById("completedList");
+  const overdueListEl = document.getElementById("overdueList");
+  const assigneeSelect = document.getElementById("assigneeSelect");
+  const filterStatus = document.getElementById("filterStatus");
+  const filterAssignee = document.getElementById("filterAssignee");
+  const autoRefreshEnableEl = document.getElementById('autoRefreshEnable');
+  const autoRefreshSecondsEl = document.getElementById('autoRefreshSeconds');
+
+  let tasks = [];
+  let prevVisibleIds = new Set();
+  let audioCtx = null;
+  let audioUnlocked = false;
+
+  function playBeep(freq = 880, duration = 150) {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      // some browsers require resume on a user gesture; attempt to resume silently
+      if (audioCtx.state === 'suspended' && !audioUnlocked) {
+        // will attempt resume; if not allowed, will be resumed on user gesture
+        audioCtx.resume().catch(()=>{});
+      }
+      // Create a fuller sound using two oscillators and a short envelope
+      const now = audioCtx.currentTime;
+      const g = audioCtx.createGain();
+      g.connect(audioCtx.destination);
+      // primary (sine)
+      const o1 = audioCtx.createOscillator();
+      o1.type = 'sine';
+      o1.frequency.setValueAtTime(freq, now);
+      // secondary (triangle) adds body
+      const o2 = audioCtx.createOscillator();
+      o2.type = 'triangle';
+      o2.frequency.setValueAtTime(freq * 1.5, now);
+
+      // small secondary gain
+      const g2 = audioCtx.createGain();
+      g2.gain.setValueAtTime(0.02, now);
+      o1.connect(g);
+      o2.connect(g2);
+      g2.connect(g);
+
+      // Envelope: quick attack, short sustain, quick release
+      const attack = 0.01;
+      const sustain = Math.max(0.02, (duration / 1000) - 0.04);
+      const release = 0.02;
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(0.22, now + attack);
+      g.gain.setValueAtTime(0.22, now + attack + sustain);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + attack + sustain + release);
+
+      // slight frequency sweep on primary for a pleasing chirp
+      o1.frequency.linearRampToValueAtTime(freq * 1.6, now + attack + sustain);
+
+      o1.start(now);
+      o2.start(now);
+      // Stop after duration + small buffer
+      const stopTime = now + attack + sustain + release + 0.01;
+      o1.stop(stopTime);
+      o2.stop(stopTime);
+    } catch (e) {
+      // ignore; audio may be blocked by browser autoplay policies
+      console.warn('Beep failed', e);
+    }
+  }
+
+  function flashHeader() {
+    const h = document.querySelector('h1');
+    if (!h) return;
+    const orig = h.style.backgroundColor;
+    h.style.transition = 'background-color 0.2s';
+    h.style.backgroundColor = '#fffa8b';
+    setTimeout(() => { h.style.backgroundColor = orig; }, 800);
+  }
+  let autoRefreshId = null;
+
+  function startAutoRefresh() {
+    stopAutoRefresh();
+    const secs = Math.max(5, parseInt(autoRefreshSecondsEl.value, 10) || 30);
+    autoRefreshId = setInterval(() => {
+      fetchTasks();
+    }, secs * 1000);
+    sessionStorage.setItem('autoRefreshEnabled', 'true');
+    sessionStorage.setItem('autoRefreshSeconds', String(secs));
+  }
+
+  function stopAutoRefresh() {
+    if (autoRefreshId) {
+      clearInterval(autoRefreshId);
+      autoRefreshId = null;
+    }
+    sessionStorage.setItem('autoRefreshEnabled', 'false');
+  }
+
+  // Show task form for HR or HoD
+  if (["HR", "HoD"].includes(currentUser.role)) {
+    document.getElementById("taskForm").style.display = "flex";
+  }
+
+  // Hide filters for Staff users (Staff should not see the status/assignee controls)
+  const filtersEl = document.querySelector('.filters');
+  if (currentUser.role === 'Staff') {
+    if (filtersEl) filtersEl.style.display = 'none';
+    // enforce sensible defaults for staff
+    try { filterStatus.value = 'incomplete'; } catch (e) {}
+    try { filterAssignee.value = 'all'; } catch (e) {}
+  } else {
+    if (filtersEl) filtersEl.style.display = 'flex';
+  }
+
+  // Auto-refresh setup: restore saved settings and wire events
+  (function initAutoRefreshUI(){
+    const savedEnabled = sessionStorage.getItem('autoRefreshEnabled');
+    const savedSecs = sessionStorage.getItem('autoRefreshSeconds');
+    if (savedSecs) autoRefreshSecondsEl.value = savedSecs;
+    const enabled = savedEnabled === null ? true : (savedEnabled === 'true');
+    autoRefreshEnableEl.checked = enabled;
+    if (enabled) startAutoRefresh();
+
+    autoRefreshEnableEl.addEventListener('change', () => {
+      if (autoRefreshEnableEl.checked) startAutoRefresh(); else stopAutoRefresh();
+    });
+
+    autoRefreshSecondsEl.addEventListener('change', () => {
+      if (autoRefreshEnableEl.checked) startAutoRefresh();
+    });
+  })();
+
+  async function fetchTasks() {
+    try {
+      const response = await fetch(`${SHEET_API_URL}?action=getTasks`);
+      if (!response.ok) throw new Error(`Network response was not ok (${response.status})`);
+      const text = await response.text();
+      try {
+          tasks = JSON.parse(text);
+      } catch (parseErr) {
+        // Show raw server response in debug pane when JSON parse fails
+        showDebug(`Failed to parse JSON from server. Raw response:\n${text}`);
+        throw new Error(`Unexpected token in JSON response`);
+      }
+      // Ensure boolean completed values and normalize dueDate
+        tasks = tasks.map(t => ({
+          ...t,
+          completed: (t.completed === true || t.completed === "true" || t.completed === "TRUE"),
+          dueDate: t.dueDate || t.due || ''
+        }));
+      // Compute which tasks would be visible with current filters/role (so we only notify for visible tasks)
+      const statusFilter = filterStatus.value;
+      const assigneeFilter = filterAssignee.value;
+      let visible = tasks.filter(task => {
+        if (statusFilter === 'completed' && !task.completed) return false;
+        if (statusFilter === 'incomplete' && task.completed) return false;
+        if (assigneeFilter !== 'all' && task.assignedTo !== assigneeFilter) return false;
+        return true;
+      });
+      if (currentUser.role === 'Staff') {
+        visible = visible.filter(task => !task.completed);
+      }
+      const visibleIds = new Set(visible.map(t => String(t.id)));
+      // If we have previous visible ids (i.e. not the first load), detect new ids
+      if (prevVisibleIds.size > 0) {
+        const newIds = [...visibleIds].filter(id => !prevVisibleIds.has(id));
+        if (newIds.length > 0) {
+          // Notify user: beep + flash
+          playBeep();
+          flashHeader();
+        }
+      }
+      prevVisibleIds = visibleIds;
+
+      renderTasks();
+      populateAssigneeFilter();
+    } catch (err) {
+      console.error("fetchTasks error:", err);
+      incompleteListEl.innerHTML = `<p>Error loading tasks: ${err.message}</p>`;
+    }
+  }
+
+  // Attempt to unlock audio on first user gesture so beeps can play
+  function unlockAudioOnGesture() {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().then(() => { audioUnlocked = true; }).catch(() => {});
+      } else {
+        audioUnlocked = true;
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  document.addEventListener('pointerdown', unlockAudioOnGesture, { once: true, capture: true });
+
+  // Debug helpers
+  function showDebug(msg) {
+    const el = document.getElementById('debug');
+    el.style.display = 'block';
+    el.textContent = msg;
+  }
+
+  async function testApiFetch() {
+    try {
+      const res = await fetch(`${SHEET_API_URL}?action=getTasks`);
+      const status = res.status + ' ' + res.statusText;
+      const body = await res.text();
+
+      if (!res.ok) {
+        // show debug only on HTTP error
+        showDebug(`Status: ${status}\n\n${body}`);
+        return;
+      }
+
+      // Try to parse JSON. If parsing fails or it contains an error, show debug
+      try {
+        const data = JSON.parse(body);
+        if (data && data.error) {
+          showDebug(`Status: ${status}\n\n${body}`);
+        }
+        // otherwise: success -> keep silent
+      } catch (parseErr) {
+        showDebug(`Failed to parse JSON. Status: ${status}\n\n${body}`);
+      }
+    } catch (e) {
+      showDebug('Fetch error: ' + e.message);
+    }
+  }
+
+  // Run the API test automatically on load (keeps debug hidden unless an error occurs)
+  window.addEventListener('load', () => {
+    // run but don't block UI
+    testApiFetch();
+  });
+
+  async function addTask() {
+    const text = document.getElementById("taskText").value.trim();
+    const assignedTo = assigneeSelect.value;
+    const dueDate = document.getElementById("dueDate") ? document.getElementById("dueDate").value : '';
+
+    if (!text || !assignedTo) {
+      alert("Please enter task text and assign it.");
+      return;
+    }
+
+    const taskData = {
+      text,
+      assignedTo,
+      dueDate,
+      createdBy: currentUser.name
+    };
+
+    try {
+      // Use text/plain content-type to avoid CORS preflight (Apps Script web apps don't respond to OPTIONS)
+      const res = await fetch(SHEET_API_URL, {
+        method: "POST",
+        body: JSON.stringify(taskData),
+        headers: {
+          "Content-Type": "text/plain;charset=UTF-8"
+        }
+      });
+      if (!res.ok) throw new Error(`POST failed: ${res.status}`);
+    } catch (err) {
+      console.error("addTask error:", err);
+      alert("Failed to add task: " + err.message);
+      return;
+    }
+
+    document.getElementById("taskText").value = "";
+  assigneeSelect.value = "";
+  if (document.getElementById("dueDate")) document.getElementById("dueDate").value = "";
+
+    fetchTasks();
+  }
+
+  async function toggleComplete(id, completed) {
+    try {
+      // Use POST with action=update and text/plain to avoid preflight
+      const url = `${SHEET_API_URL}?action=update`;
+      const res = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({
+          id,
+          completed: completed.toString(),
+          completedAt: completed ? new Date().toLocaleString() : "", 
+          completedBy: completed ? currentUser.name : ''
+        }),
+        headers: {
+          "Content-Type": "text/plain;charset=UTF-8"
+        }
+      });
+      if (!res.ok) throw new Error(`UPDATE failed: ${res.status}`);
+    } catch (err) {
+      console.error("toggleComplete error:", err);
+      alert("Failed to update task: " + err.message);
+      return;
+    }
+
+    fetchTasks();
+  }
+
+  // Determine if current user is admin or HR (supports multiple possible role strings)
+  function isAdminOrHR() {
+    try {
+      const raw = (rawRole || '').toString().trim().toLowerCase();
+      const norm = (currentUser.role || '').toString().trim().toLowerCase();
+      return raw === 'admin' || raw === 'hr' || norm === 'hr' || norm === 'hod';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Delete a task (asks for confirmation, then calls API if available and refreshes list)
+  async function deleteTask(id) {
+    if (!id) return;
+    if (!confirm('Are you sure you want to delete this task? This cannot be undone.')) return;
+
+    // Try to call API delete endpoint if available
+    try {
+      const url = `${SHEET_API_URL}?action=delete`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify({ id })
+      });
+      if (!res.ok) throw new Error(`DELETE failed: ${res.status}`);
+    } catch (err) {
+      // If API call fails, show an error but still refresh to pick up any server-side change
+      console.error('deleteTask error:', err);
+      alert('Failed to delete task via server API: ' + err.message + '\nRefreshing the list in case it was removed.');
+    }
+
+    // Refresh tasks regardless of API result
+    fetchTasks();
+  }
+
+  // Format a timestamp (ISO or other) into a local date + time string
+  function formatDateTime(value, dateOnly) {
+    if (!value) return '';
+    const d = new Date(value);
+    if (isNaN(d)) return String(value);
+    
+    // For due dates, show just the date in a clearer format
+    if (dateOnly) {
+      return d.toLocaleDateString('en-GB', { 
+        weekday: 'short',
+        day: 'numeric', 
+        month: 'short', 
+        year: 'numeric'
+      });
+    }
+    
+    // For timestamps (created/completed), show date and time
+    const date = d.toLocaleDateString();
+    const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return `${date} at ${time}`;
+  }
+
+  function renderTasks() {
+    const statusFilter = filterStatus.value;
+    const assigneeFilter = filterAssignee.value;
+
+    // Clear both lists
+    incompleteListEl.innerHTML = '';
+    completedListEl.innerHTML = '';
+    if (overdueListEl) overdueListEl.innerHTML = '';
+
+    // Build filtered list based on UI filters
+    let filtered = tasks.filter(task => {
+      if (statusFilter === "completed" && !task.completed) return false;
+      if (statusFilter === "incomplete" && task.completed) return false;
+      if (assigneeFilter !== "all" && task.assignedTo !== assigneeFilter) return false;
+      return true;
+    });
+
+    // If user is Staff, show all incomplete tasks (not just those assigned to them)
+    if (currentUser.role === 'Staff') {
+      filtered = filtered.filter(task => !task.completed);
+    }
+
+    if (filtered.length === 0) {
+      incompleteListEl.innerHTML = "<p>No tasks found.</p>";
+      // hide completed section for Staff
+      if (currentUser.role === 'Staff') {
+        document.querySelector('.completed-section').style.display = 'none';
+      }
+      // hide overdue section when no tasks
+      const ovSec = document.querySelector('.overdue-section');
+      if (ovSec) ovSec.style.display = 'none';
+      return;
+    }
+
+    // Show/hide completed section depending on role
+    if (currentUser.role === 'Staff') {
+      document.querySelector('.completed-section').style.display = 'none';
+    } else {
+      document.querySelector('.completed-section').style.display = 'block';
+    }
+
+    // Split tasks into incomplete and completed for rendering
+    const now = Date.now();
+    const overdueTasks = filtered.filter(t => !t.completed && t.dueDate && (new Date(t.dueDate).getTime() < now));
+    const incompleteTasks = filtered.filter(t => !t.completed && !(t.dueDate && (new Date(t.dueDate).getTime() < now)));
+    const completedTasks = filtered.filter(t => t.completed);
+
+    // Helper to render a task into a container
+    function renderInto(container, task) {
+      const div = document.createElement('div');
+      const isOverdue = !task.completed && task.dueDate && (new Date(task.dueDate).getTime() < Date.now());
+      div.className = 'task' + (task.completed ? ' completed' : '') + (isOverdue ? ' overdue' : '');
+      if (isOverdue) div.title = 'This task is overdue';
+      const createdAtDisplay = task.createdAt && String(task.createdAt).toLowerCase() !== 'false' ? task.createdAt : '';
+      const canToggle = ["HR", "HoD", "Staff"].includes(currentUser.role) || (task.assignedTo === currentUser.name);
+      const dueDisplay = task.dueDate ? `<small style="color: ${isOverdue ? '#d32f2f' : '#2196F3'}"><strong>Due: ${formatDateTime(task.dueDate, true)}</strong></small><br/>` : '';
+      // Build action buttons: toggleComplete (if allowed) and delete (only for admin/HR)
+      let actions = '';
+      if (canToggle) {
+        actions += `<button onclick="toggleComplete('${task.id}', ${!task.completed})">${task.completed ? "Mark Incomplete" : "Mark Complete"}</button>`;
+      }
+      if (isAdminOrHR()) {
+        actions += ` <button onclick="deleteTask('${task.id}')" style="background:#f44336;color:#fff;border:none;padding:4px 8px;border-radius:3px;">Delete</button>`;
+      }
+      div.innerHTML = `
+        <strong>${task.text}</strong><br/>
+        <small>Assigned to: ${task.assignedTo}</small><br/>
+        ${dueDisplay}
+        <small>Created by: ${task.createdBy}${createdAtDisplay ? ' on ' + createdAtDisplay : ''}</small><br/>
+        ${task.completed ? `<small>Completed by: ${task.completedBy || 'Unknown'} on ${formatDateTime(task.completedAt)}</small>` : ""}<br/>
+        ${actions}
+      `;
+      container.appendChild(div);
+    }
+
+    // Show/hide overdue section
+    const ovSec = document.querySelector('.overdue-section');
+    if (ovSec) ovSec.style.display = (overdueTasks.length > 0 ? 'block' : 'none');
+
+    overdueTasks.forEach(t => { if (overdueListEl) renderInto(overdueListEl, t); });
+    incompleteTasks.forEach(t => renderInto(incompleteListEl, t));
+    completedTasks.forEach(t => renderInto(completedListEl, t));
+  }
+
+  function populateAssigneeFilter() {
+    const allNames = [...new Set(tasks.map(task => task.assignedTo))];
+    filterAssignee.innerHTML = `<option value="all">All</option>`;
+    allNames.forEach(name => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      filterAssignee.appendChild(opt);
+    });
+  }
+
+  // Initial Load
+  fetchTasks();
+
+  // Filter events
+  filterStatus.addEventListener("change", renderTasks);
+  filterAssignee.addEventListener("change", renderTasks);
+</script>
+  <footer>
+    <a href="index.html" class="back-link">← Back to Staff Portal</a>
+  </footer>
+</body>
+</html>

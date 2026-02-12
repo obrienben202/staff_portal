@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Portal</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link href="staff_portal_style.css" rel="stylesheet" type="text/css">
+    <link href="hr_app_style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <header>
+        <p>HR Portal</p>
+        <h1 id="user-info">Welcome to your staff portal!</h1>
+        <button id="logout-btn" class="logout-button">Logout</button>
+    </header>
+
+    <div class="content-wrapper">
+        <nav class="navbar">
+            <a href="index.html">🏠 Main Portal</a>
+            <a href="#" onclick="toggleDropdown('hrFormsDropdown'); return false;">📋 HR Forms</a>
+            <a href="#" onclick="toggleDropdown('staffResDropdown'); return false;">📘 Resources</a>
+            <a href="#" id="admin-nav-link" onclick="toggleDropdown('hrManagementDropdown'); return false;" style="display: none;">⚙️ Management</a>
+        </nav>
+
+        <div id="hrFormsDropdown" class="dropdown-section" style="display: none;">
+            <div class="dropdown-grid">
+                <div class="grid-label">Leave & Absence</div>
+                <div class="card"><a href="https://docs.google.com/forms/d/e/1FAIpQLSeuKMfaOW0Zt0brFK9CzwHa8Iyg5bEJnh0XG-ND0mxGVhliuQ/viewform?usp=dialog" target="_blank">📅 Holiday Request Form</a></div>
+                <div class="card"><a href="https://docs.google.com/forms/d/e/1FAIpQLSePfZGvUFTpODvMoOsfxyAIWaNBTc3DURaJEsVDi0XAUoDfOg/viewform?usp=dialog" target="_blank" >✉️ Staff Leave Request Formn</a></div>
+                <div class="card"><a href="#" target="_blank">📑 Leave Policy</a></div>
+            </div>
+        </div>
+
+        <div id="staffResDropdown" class="dropdown-section" style="display: none;">
+            <div class="dropdown-grid">
+                <div class="card"><a href="#" target="_blank">📄 My Payslips</a></div>
+                <div class="card"><a href="#" target="_blank">📘 Staff Handbook</a></div>
+                <div class="card"><a href="#" target="_blank">✉️ Contact HR Dept</a></div>
+            </div>
+        </div>
+
+        <div id="hrManagementDropdown" class="dropdown-section" style="display: none;">
+            <div class="dropdown-grid">
+                <div class="grid-label">HR Administration</div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1-nBowxk60GQ1l7mQsEXSOMj44aUI8nQT" target="_blank">📁 HR Shared Drive</a></div>
+                <div class="card"><a href="#" target="_blank">📊 HR Dashboard</a></div>
+                <div class="card"><a href="https://docs.google.com/spreadsheets/d/1l4zNgGxr-wccIcJqswHp5mlt6Q4slIFU8NmdnkOAqOc/edit?usp=sharing" target="_blank">📈 Holiday Form Data</a></div>
+            
+                <div class="grid-label">Department Management</div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1Zd0WyS29cpKRi1l2yu7VCejlsoLAfy8x" target="_blank">📂 HoD Folder</a></div>
+                <div class="card"><a href="https://docs.google.com/spreadsheets/d/1UIVL98gDrRYA7fLiDiMWrqQK8BjcN9Ar7fWDUDG_eYs/edit?usp=sharing" target="_blank">📝 Staff Leave Form Data</a></div>
+            </div>
+        </div>
+
+        <div class="app-container" style="margin-top: 20px;">
+            <div class="form-card">
+                <div class="form-header">📅 Staff Holiday Request Form</div>
+                <div class="google-form-wrapper">
+                    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeuKMfaOW0Zt0brFK9CzwHa8Iyg5bEJnh0XG-ND0mxGVhliuQ/viewform?embedded=true" width="100%" height="1100" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Staff Portal. All rights reserved.</p>
+        <p>Developed by the IT Support Team</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    
+    <script>
+        // 1. Toggle Dropdown function
+        function toggleDropdown(id) {
+            const dropdowns = document.querySelectorAll('.dropdown-section');
+            dropdowns.forEach(section => {
+                if (section.id === id) {
+                    section.style.display = (section.style.display === 'block') ? 'none' : 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        }
+
+        // 2. Security & User Logic
+        (function(){
+            // Pull data from browser session
+            const rawRole = sessionStorage.getItem('userRole') || "";
+            const role = rawRole.toLowerCase().trim(); // Ensure it's lowercase and clean
+            const fullName = sessionStorage.getItem('fullName') || 'Staff Member';
+            
+            // Authorized list (MUST be lowercase here)
+            const authorizedRoles = ['admin', 'hr', 'hod']; 
+
+            // Update Header Greeting
+            const userInfoHeading = document.getElementById('user-info');
+            if (userInfoHeading) {
+                userInfoHeading.textContent = `Welcome, ${fullName} to your HR Portal!`;
+            }
+
+            // Show Management Gear ONLY if role is in our authorized list
+            const adminNavLink = document.getElementById('admin-nav-link');
+            if (adminNavLink && authorizedRoles.includes(role)) {
+                adminNavLink.style.display = 'inline-block';
+            }
+
+            // Logout Functionality
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.onclick = function() {
+                    sessionStorage.clear();
+                    window.location.href = 'login.html';
+                };
+            }
+        })();
+    </script>
+</body>
+</html>

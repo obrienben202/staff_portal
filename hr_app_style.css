@@ -1,0 +1,176 @@
+/* --- HR PORTAL BASE STYLES --- */
+:root {
+    --hr-blue: #003366;
+    --hr-light-blue: #e6f0fa;
+    --hr-orange: #f39c12;
+    --hr-dark: #2c3e50;
+    --white: #ffffff;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f9;
+    margin: 0;
+    color: var(--hr-dark);
+}
+
+/* --- HEADER & LOGOUT (Matching Main Portal) --- */
+header {
+    background-color: var(--hr-blue);
+    color: white;
+    padding: 20px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 4px solid var(--hr-orange);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.logout-button {
+    background-color: var(--hr-orange);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.logout-button:hover {
+    background-color: #d35400;
+}
+
+/* --- NAVBAR & DROPDOWNS (Matching Main Portal) --- */
+.navbar {
+    background-color: var(--hr-dark);
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+    gap: 20px;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 15px;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+.navbar a:hover {
+    background-color: var(--hr-blue);
+}
+
+.dropdown-section {
+    background-color: var(--white);
+    padding: 20px 5%;
+    border-bottom: 2px solid #ddd;
+    animation: slideDown 0.3s ease-out;
+}
+
+.dropdown-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.grid-label {
+    grid-column: 1 / -1;
+    font-weight: bold;
+    color: var(--hr-blue);
+    margin-top: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+/* --- CARDS (Links) --- */
+.card {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #eee;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+    border-color: var(--hr-orange);
+}
+
+.card a {
+    text-decoration: none;
+    color: var(--hr-dark);
+    font-weight: bold;
+    display: block;
+}
+
+/* --- HR FORM CONTAINER --- */
+.app-container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.form-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid #e1e8ed;
+}
+
+.form-header {
+    background-color: var(--hr-blue);
+    color: white;
+    padding: 15px 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.google-form-wrapper {
+    padding: 10px;
+    background: white;
+}
+
+iframe {
+    border: none;
+    border-radius: 0 0 12px 12px;
+}
+
+/* --- FOOTER --- */
+footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- MOBILE RESPONSIVENESS --- */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .navbar {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Staff Portal Login</title>
+  <link rel="icon" type="image/png" href="images/logo.png">
+  <link href="staff_portal_login.css" rel="stylesheet" type="text/css">
+
+  </head>
+<body>
+
+  <h1>Staff Portal Login</h1>
+
+  <div class="login-box">
+    
+    <p style="color: #666; font-size: 0.9em; margin-bottom: 20px;">
+      Please use your **Windows Network Credentials** (the username and password you use to log into your computer).
+    </p>
+
+    <form id="login-form">
+      <label for="username">Username:</label>
+      <input type="text" id="username" required><br>
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" required><br>
+
+      <label><input type="checkbox" onclick="togglePassword()"> Show Password</label><br><br>
+
+      <button type="submit">Login</button>
+    </form>
+
+    <p id="error-message" style="color: red;"></p> 
+
+    </div>
+
+  <script>
+    // Show Password Toggle
+    function togglePassword() {
+      const password = document.getElementById("password");
+      password.type = password.type === "password" ? "text" : "password";
+    }
+
+    // Removed: Google Sign-In Response Handler (handleCredentialResponse)
+  </script>
+
+  <script src="login.js"></script>
+</body>
+
+</html>
+
+

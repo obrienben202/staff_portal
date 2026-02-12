@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Post News - Staff Portal</title>
+  <link href="staff_portal_style.css" rel="stylesheet" type="text/css">
+  
+  <style>
+    #image-preview {
+      display: none;
+      max-width: 100%;
+      margin: .5rem 0;
+      border-radius: 6px;
+    }
+  </style>
+
+</head>
+<body>
+  <header>
+    <h1>Post News</h1>
+    <h2 id="user-info">Checking...</h2>
+  </header>
+
+  <main style="max-width:780px;margin:1rem auto;">
+    <div id="not-authorized" style="display:none;color:#900;background:#fee;padding:1rem;border-radius:6px;">
+      You are not authorized to post news.
+    </div>
+
+    <form id="post-news-form" style="display:none;">
+      <label>Title</label>
+      <input id="news-title" required style="width:100%;margin-bottom:.5rem;" />
+
+      <label>Or Upload Image</label>
+      <input type="file" id="news-image-file" accept="image/*" style="width:100%;margin-bottom:.5rem;" />
+      <img id="image-preview" alt="Preview" />
+      
+      <label>Content / Summary</label>
+      <textarea id="news-content-input" required style="width:100%;height:140px;margin-bottom:.5rem;"></textarea>
+
+      <div style="display:flex;gap:.5rem;">
+        <button type="submit">Post News</button>
+        <button type="button" id="cancel">Cancel</button>
+      </div>
+    </form>
+
+    <p><a href="index.html">← Back to Portal</a></p>
+  </main>
+
+  <script>
+    (function(){
+      const role = sessionStorage.getItem('userRole');
+      const fullName = sessionStorage.getItem('fullName') || 'Unknown User';
+      document.getElementById('user-info').textContent = fullName;
+
+      // Only allow staff/admin/HR to post
+      if (!(role === 'staff' || role === 'admin' || role === 'HR' || role === 'hod')) {
+        document.getElementById('not-authorized').style.display = 'block';
+        return;
+      }
+
+      const form = document.getElementById('post-news-form');
+      form.style.display = 'block';
+
+      const NEWS_KEY = 'staffPortal_latestNews';
+      function loadJSON(key){ try{ const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : []; }catch(e){return [];} }
+      function saveJSON(key,val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
+
+      // --- Image file handling ---
+      const fileInput = document.getElementById('news-image-file');
+      const imageInput = document.getElementById('news-image');
+      const preview = document.getElementById('image-preview');
+      let uploadedImageData = "";
+
+      fileInput.addEventListener('change', function(){
+        const file = fileInput.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e){
+          uploadedImageData = e.target.result;
+          preview.src = uploadedImageData;
+          preview.style.display = 'block';
+          // Clear text URL if file is selected
+          imageInput.value = '';
+        };
+        reader.readAsDataURL(file);
+      });
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const title = document.getElementById('news-title').value.trim();
+        const content = document.getElementById('news-content-input').value.trim();
+        const url = document.getElementById('news-url').value.trim();
+        let image = document.getElementById('news-image').value.trim();
+
+        if (!title || !content) { 
+          alert('Please provide title and content'); 
+          return; 
+        }
+
+        // Prefer uploaded image over URL if available
+        if (uploadedImageData) {
+          image = uploadedImageData;
+        }
+
+        const items = loadJSON(NEWS_KEY);
+        items.push({ title, content, url, image, author: fullName, date: new Date().toLocaleDateString() });
+        saveJSON(NEWS_KEY, items);
+        alert('News posted. Returning to portal.');
+        window.location.href = 'index.html';
+      });
+
+      document.getElementById('cancel').addEventListener('click', ()=>{ 
+        window.location.href = 'index.html'; 
+      });
+    })();
+  </script>
+
+</body>
+</html>

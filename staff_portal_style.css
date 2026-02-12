@@ -1,0 +1,307 @@
+/* --- 1. Base Styles & Body --- */
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4; /* Light gray background */
+    margin: 0;
+    padding: 0;
+    color: #333333;
+}
+
+/* --- 2. Header (Dark Blue Banner) --- */
+header {
+    background-color: #063f66; /* The dark primary blue */
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.2em;
+    margin-bottom: 5px;
+}
+
+header p {
+    font-size: 1.2em;
+    margin-top: 5px;
+}
+
+.logout-button {
+    background-color: #e67e22; /* Accent color for the button */
+    color: white;
+    padding: 5px 15px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+/* ------------------------------------------------ */
+/* --- New Section for Content Wrapper & Dropdowns --- */
+/* ------------------------------------------------ */
+
+/* CRITICAL FIX 1: New Wrapper for positioning context */
+.content-wrapper {
+    position: relative; 
+    max-width: 1200px;
+    margin: 0 auto;
+    /* Ensure there is no height issue with the wrapper */
+    min-height: 50px; 
+}
+
+/* --- 3. Navigation Bar (Pill Tabs) --- */
+.navbar {
+    display: flex;
+    justify-content: center; /* Centers the nav items */
+    background-color: #3f78a0; /* Slightly lighter blue for nav */
+    padding: 0;
+    list-style: none;
+    margin: 0;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: #ffffff;
+    /* Pill shape styling */
+    padding: 10px 20px;
+    margin: 0 2px;
+    border-radius: 5px;
+    display: block;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.navbar a:hover,
+.navbar a.active {
+    background-color: #5599cc; /* Highlight color on hover/active */
+}
+
+/* CRITICAL FIX 2: Dropdown Section Positioning (Now positioned BELOW the Navbar) */
+.dropdown-section {
+    position: absolute;
+    top: 50px; /* MOVED from 0 to 50px to sit below the navbar */
+    left: 0;
+    right: 0;
+    z-index: 1000; 
+    background: #ffffff; 
+    border: 1px solid #ddd;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+/* The Grid for the Dropdown Cards */
+.dropdown-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 0;
+}
+.dropdown-grid .card {
+    /* Each item takes a proportional width in the flex container */
+    flex: 0 0 calc(25% - 15px); 
+    min-width: 150px; /* Ensure a minimum size */
+    background: #f9f9f9;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    transition: background-color 0.2s;
+    text-align: center;
+}
+.dropdown-grid .card a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #063f66;
+    font-weight: bold;
+}
+.dropdown-grid .card:hover {
+    background-color: #e0f0ff;
+}
+.dropdown-grid .grid-label {
+    width: 100%;
+    color: #e67e22;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+
+/* ------------------------------------------- */
+/* --- 4. Main Content Layout (Grid) --- */
+/* ------------------------------------------- */
+.portal-main {
+    /* Main container centers the content */
+    max-width: 1200px;
+    /* FIX 3: Reduced top margin since dropdowns are now correctly positioned */
+    margin: 20px auto; 
+    padding: 0 20px;
+
+    /* Grid for the two main sections */
+    display: grid;
+    /* Columns: News (1fr), News (1fr), Quick Links (250px wide) */
+    grid-template-columns: 1fr 1fr 250px;
+    gap: 30px; 
+}
+
+.news-area {
+    /* News section spans the first two columns */
+    grid-column: 1 / span 2;
+}
+
+.quick-links-area {
+    /* Quick links section takes the third column */
+    grid-column: 3 / 3;
+}
+
+/* --- 5. News Section Styling --- */
+.latest-news {
+    /* *** UPDATED: FLEXBOX FOR ALIGNMENT *** */
+    display: flex;
+    justify-content: space-between; /* Pushes H2 and button to edges */
+    align-items: center; /* Vertically centers the title and button */
+    flex-wrap: wrap; /* Allows the news-grid to wrap below */
+    /* ************************************** */
+
+    padding: 0;
+    border: none;
+}
+.news-area h2 {
+    color: #e67e22; /* Accent color for headings */
+    font-size: 1.4em;
+    padding-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 0; /* Ensures tight alignment with the button */
+}
+
+/* *** NEW: Styling for the Post News Button *** */
+#post-news-area {
+    margin: 0; /* Remove previous margins for alignment */
+    /* Ensure the link inside the div respects the new alignment */
+    display: flex; 
+    align-items: center;
+}
+
+#open-post-page {
+    background-color: #e67e22; /* Accent Color */
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.1s;
+    font-size: 0.9em;
+    /* Margin to push it slightly away from the news title if needed */
+    margin-left: 10px;
+}
+
+#open-post-page:hover {
+    background-color: #d16913; /* Slightly darker shade on hover */
+    transform: translateY(-1px); /* Small lift effect */
+}
+/* ********************************************* */
+
+
+.news-grid {
+    display: grid;
+    /* Three equal columns for news cards */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 20px;
+    margin-top: 10px;
+    /* Ensure the grid takes the full width of the news-area container */
+    width: 100%; 
+}
+
+.news-card {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    /* Use a light border for definition, no strong shadow */
+    border: 1px solid #e0e0e0;
+}
+
+/* Image sizing to ensure uniform card height */
+.news-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 3px;
+    margin-bottom: 10px;
+    max-height: 120px; /* Constraint image size for card */
+    object-fit: cover; /* Ensures image fills the area without distortion */
+}
+
+.news-card h3 {
+    font-size: 1.1em;
+    color: #063f66;
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.news-card p {
+    font-size: 0.9em;
+    color: #666;
+    margin: 0 0 10px;
+}
+
+.news-card .read-more {
+    color: #e67e22; /* Accent color for the link */
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 0.9em;
+    display: inline-block; /* Allows spacing */
+    margin-top: 5px;
+}
+
+/* Original news-item styles must be overridden/removed */
+.news-item {
+    display: block; /* Overrides original flex layout */
+    margin-bottom: 0;
+}
+
+/* --- 6. Quick Links Sidebar --- */
+.quick-links-area h3 {
+    color: #333; 
+    font-size: 1.4em;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+.quick-links-area ul {
+    background: white;
+    list-style: none;
+    padding: 10px 20px;
+    margin: 0;
+    border-radius: 5px;
+    border: 1px solid #e0e0e0;
+}
+
+.quick-links-area li a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #063f66; 
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-weight: 500;
+}
+
+.quick-links-area li:last-child a {
+    border-bottom: none; 
+}
+
+.quick-links-area .icon {
+    margin-right: 10px;
+    color: #3f78a0; 
+    font-size: 1.2em;
+}
+
+/* --- Footer Styling --- */
+footer {
+    clear: both; 
+    margin-top: 20px; 
+    text-align: center;
+    padding: 10px 0;
+    background: #333;
+    color: white;
+}

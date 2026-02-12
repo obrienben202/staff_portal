@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Portal</title>
+	<link rel="icon" type="image/png" href="images/logo.png">
+    <link href="staff_portal_style.css" rel="stylesheet" type="text/css">
+	<link href="hr_app_style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <header>
+        <p>Staff Portal</p>
+        <h1 id="user-info">Welcome, ${fullName} to your staff portal!</h1>
+        <button id="logout-btn" class="logout-button">Logout</button>
+    </header>
+
+    <div class="content-wrapper">
+
+        <nav class="navbar">
+            <a href="#" onclick="toggleDropdown('myWorkDropdown'); return false;">📁 My Work</a>
+            <a href="#" onclick="toggleDropdown('subjectDropdown'); return false;">🎓 Subjects</a>
+            <a href="#" onclick="toggleDropdown('rgDropdown'); return false;">📖 Form Group</a>
+            <a href="#" onclick="toggleDropdown('learningSupportDropdown'); return false;">🧩 Learner Support</a>
+            <a href="#" onclick="toggleDropdown('supportDropdown'); return false;">💬 Support & Feedback</a>
+            <a href="#" id="admin-nav-link" onclick="toggleDropdown('adminDropdown'); return false;">⚙️ Admin</a> </nav>
+
+        <div id="adminDropdown" class="dropdown-section" style="display: none;">
+            <div class="dropdown-grid">
+                <div class="card"><a href="add-news.html">📰 Add News</a></div>
+				<div class="grid-label"> IT</div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1in9hWQGuYs-BWCtCdzkgAnwUK8DgUVKy?usp=drive_link" target="_blank">📁 IT Shared Drive</a></div>
+				<div class="card"><a href="https://docs.google.com/forms/d/e/1FAIpQLScqenQ8vdoJWySdXLi1oAC99OQXPVvHh7WEKRpklQsaVqJ_kA/viewform?usp=publish-editor" target="_blank">➕ Add User or Remove Users</a></div>
+				<div class="card"><a href="https://auth.monday.com/auth/login_monday" target="_blank">📊 IT Dashborad</a></div>
+				<div class="grid-label"> HR</div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1-nBowxk60GQ1l7mQsEXSOMj44aUI8nQT?usp=drive_link" target="_blank">📁 HR Shared Drive</a></div>
+				<div class="card"><a href="https://auth.monday.com/auth/login_monday" target="_blank">📊 HR Dashborad</a></div>
+            </div>
+        </div>
+
+        <div id="myWorkDropdown" class="dropdown-section" style="display: none;">
+            <div class="dropdown-grid">
+                <div class="card"><a href="todo.html">📝 My Tasks</a></div>
+                <div class="card"><a href="https://www.eskooly.com/bb/EmployeePortal/signin.php" target="_blank">📊 Attendance Tracker</a></div>
+                <div class="card"><a href="https://app.eu.safetyculture.com/training/learn/home" target="_blank">🧠 Learning & Dev</a></div>
+                <div class="card"><a href="https://mail.google.com" target="_blank">📧 Email</a></div>
+                <div class="card"><a href="department-timetables.html" target="_blank">📅 My Schedule</a></div>
+                <div class="card"><a href="https://www.google.com/calendar" target="_blank">📆 Calendar</a></div>
+                <div class="card"><a href="https://classroom.google.com" target="_blank">📚 Google Classroom</a></div>
+                <div class="card"><a href="https://drive.google.com" target="_blank">📁 Drive</a></div>
+				<div class="card"><a href="https://obrienben202.github.io/student_protal/login.html" target="_black">Student Portal</a></div>
+            </div>
+        </div>
+
+        <div id="subjectDropdown" class="dropdown-section" style="display: none;">
+            <div class="dropdown-grid">
+                <div class="card"><a href="https://drive.google.com/drive/folders/1WBMO-LI5ood8LpD63ehi0WTcsOotAFTp?usp=drive_link" target="_blank">📘 English</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1DMziHKuOBbyN41vIW_YtdNYRujlgVFjA?usp=drive_link" target="_blank">📐 Maths</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1mAJ7eWd8ODtEJzW3F5Ug7cYBnp0k_W5m?usp=drive_link" target="_blank">🌍 Geography</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/11QUvuRMHOlV3-sI9eB6ITpKHBihqnGs4?usp=drive_link" target="_blank">🇫🇷 French</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1jdAuxGu9aBg19oplaxbJ1IuBrJHx2X45?usp=drive_link" target="_blank">👩‍🍳 Food Tech</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1-TKgcLEUpobKsfBtcQNb0TsSQq-6MYCm?usp=drive_link" target="_blank">🎭 Drama</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1VKIT_0dGEFPCrVMWtnejOAW6shtRpOrr?usp=drive_link" target="_blank">📊 Business</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/17ezY6Q1vRdNPx7RYJXXNJ3AgzXghjNiZ?usp=drive_link">🎨 Art</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/16Pi8gMORhOpRa8PYqNT6M2DeQmSraKT_?usp=drive_link" target="_blank">💻 Digital Tech</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1kofVNIj4EiHj5f5BILoUhZXUdwDa-xHK?usp=drive_link" target="_blank">🏆 Welsh Bacc</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/0BxieRBpYTIOYRVg2WDhoUGNZTWM?resourcekey=0-d1T9l_BuKTgWI5ct5Sp4Pw&usp=drive_link" target="_blank">🖥️ ICT</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1Q0H_WYzt5OLQP2J90SuAPsfRHeFYVyVF?usp=drive_link" target="_blank">🪚 Wood Work</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1EHXys-WcT12KdbkMA1j3Q53UfV5agyZG?usp=drive_link" target="_blank">⛪ RE</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1dgfV7TZrXCuNMRu4Iqr50qdaZi7WylNJ?usp=drive_link" target="_blank">⚽ PE</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1GHIt3XHDBWnojQZ-9UKdMafIACcpV9Wi?usp=drive_link" target="_blank">🎼 Music</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1SmR3KK5ESz1J17exUzjHTNyTHSzjR1fd?usp=drive_link" target="_blank">📜 History</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1t7a1HlKcgdaGodmEQYPM-LWID5O5ZXMr?usp=drive_link" target="_blank">🔬 Science</a></div>
+            </div>
+        </div>
+
+        <div id="learningSupportDropdown" class="dropdown-section" style="display: none;">
+            <div class="dropdown-grid">
+                <div class="grid-label">📚 ALN Support</div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1GxiJ6H9uRzG9VTlBfz841o22xbcxw_yN?usp=drive_link" target="_blank">📁 ALN Folder</a></div>
+                <div class="card"><a href="https://docs.google.com/spreadsheets/d/1HAEEIxJjIan8ZPhyMJ3s17Pqs0qD_w-TcS3ojRCrpD0/edit?usp=sharing" target="_blank">📊 ALN Register / Pupil Profiles</a></div>
+                <div class="card"><a href="https://docs.google.com/forms/d/e/1FAIpQLSd63GmRpxxlzrxFVU6ZSNQpvEgTGyOvjqsgZyl1oT2NdiJXRQ/viewform?usp=header" target="_blank">🎯 Intervention Programmes</a></div>
+                <div class="card"><a href="https://docs.google.com/forms/d/e/1FAIpQLSe0UhGuYusMLjtqr2gaeyu9CgUG36nm95WrWVBkuxxLO7dUtg/viewform?usp=header" target="_blank">👂 Referral Form</a></div>
+                <div class="grid-label">📝 Exams & Access Arrangements</div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1kdE9WxRqnB-OCgJJkbvFtiM4Jkh5g0i_?usp=drive_link" target="_blank">📁 Exams Folder</a></div>
+                <div class="card"><a href="https://docs.google.com/forms/d/e/1FAIpQLScHDVK8TfF6jw6I4u4eacvaWtTGOIoe_LnBcfKImKkfe7jgzA/viewform?usp=sf_link" target="_blank">📝 Access Arrangements</a></div>
+                <div class="grid-label">🧠 Study Support</div>
+                <div class="card"><a href="skills-and-strategies.html" target="_blank">🧠 Study Skills & Strategies</a></div>
+            </div>
+        </div>
+
+
+        <div id="supportDropdown" class="dropdown-section" style="display: none;">
+            <div class="dropdown-grid">
+                <div class="card"><a href="https://forms.monday.com/forms/6cea2a8aff9d0257a6f8f4e6bdf9eca6?r=euc1" target="_blank">🆘 IT Help Desk</a></div>
+                <div class="card"><a href="https://forms.monday.com/forms/612f8308debbc60ad77a59827c88b9a1?r=euc1" target="_blank">🆘 Staff Card Problem</a></div>
+                <div class="card"><a href="https://docs.google.com/forms/d/e/1FAIpQLScCXX2XbfTxarVT-CYdcgdzQAygZ0cSVuMNEmfqPuOkcO2n5g/viewform?usp=sf_link" target="_blank"> Pupil Accident Report</a></div>
+                <div class="card"><a href="https://docs.google.com/forms/d/e/1FAIpQLSeIRBXbOovuBfvUFNtvbkb81jODB8sZ-Sgd3SnWXG00lM1WwQ/viewform?usp=sf_link" target="_blank"> Pupil Behaviour Report Form</a></div>
+                <div class="card"><a href="hr_app.html">🧾 Staff HR App</a></div>
+                <div class="card"><a href="https://docs.google.com/spreadsheets/d/1d1aDVf6qZ-N0bfjOYVdFspDpcqNqJHphwmqxGWtxSg0/edit?usp=sharing" target="_blank"> 🗣️ Support Information</a></div>
+            </div>
+        </div>
+
+        <div id="rgDropdown" class="dropdown-section" style="display: none;">
+            <div class="dropdown-grid">
+                <div class="card"><a href="https://drive.google.com/drive/folders/1Qij7hq8mb4U1vXmaCczyCcP3tRU7Mfco?usp=drive_link" target="_blank">📁 RG Folder</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1EtBr0ZtFSBlX4dx3sdOUqDCKZ_goWCK8?usp=drive_link" target="_blank">Year 7</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1ZF-G_2OqJPuto3BBIGFBwQjQKHY3WUBk?usp=drive_link" target="_blank">Year 8</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1J5wPg0yw8PWjAIstyCn20NA4TTqS6sdH?usp=drive_link" target="_blank">Year 9</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/18n7HfAVTB7JDS0YomZVM5Yr_X8F6PMxN?usp=drive_link" target="_blank">Year 10</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1mbTxXKD388qC_yXYTXBkW7160SAzYr0V?usp=drive_link" target="_blank">Year 11</a></div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="portal-main">
+
+        <div class="news-area">
+
+            <section class="latest-news">
+                <h2><span class="icon">📰</span> Latest News</h2>
+
+                <div id="post-news-area" style="margin-bottom:1rem; display:none;">
+                    <a href="add-news.html"><button id="open-post-page">➕ Post News</button></a>
+                </div>
+
+                <div class="news-grid">
+
+                    <div id="dynamic-news"></div>
+					<div class="news-card">
+                        <img src="last_news/images/training.png" alt="New Training Materials">
+                        <h3>Staff Training Access 2025–2026 Training & Report Issues</h3>
+                        <p style="font-size:0.8em; margin-bottom:5px;"><em>Published: 27th Jan 2025</em></p>
+                        <p>The updated staff training materials for the upcoming academic year are now available for review.</p>
+                        <a href="last_news/news-training-update.html" class="read-more">Read More</a>
+                    </div>
+					
+					<!--<div class="news-card">
+                        <img src="last_news/images/ilp_support.jpg" alt="ILP Teacher Comments Update">
+                        <h3>Term 3 ILP Teacher Comments</h3>
+                        <p style="font-size:0.8em; margin-bottom:5px;"><em>Published: ****</em></p>
+                        <p>All teaching staff are required to complete their Term 3 ILP Teacher Comments...</p>
+                        <a href="last_news/term3_techcomment.html" class="read-more">Read More</a>
+                    </div>-->
+					
+					 <div class="news-card">
+                        <img src="last_news/images/ilp_support.jpg" alt="ILP Teacher Comments Update">
+                        <h3>Term 2 ILP Teacher Comments</h3>
+                        <p style="font-size:0.8em; margin-bottom:5px;"><em>Published: 12 Jan 2026</em></p>
+                        <p>All teaching staff are required to complete their Term 2 ILP Teacher Comments...</p>
+                        <a href="last_news/term2_techcomment.html" class="read-more">Read More</a>
+                    </div>
+					
+                    <div class="news-card">
+                        <img src="last_news/images/ilp_support.jpg" alt="ILP Teacher Comments Update">
+                        <h3>Term 1 ILP Teacher Comments</h3>
+                        <p style="font-size:0.8em; margin-bottom:5px;"><em>Published: 04 Dec 2025</em></p>
+                        <p>All teaching staff are required to complete their Term 1 ILP Teacher Comments...</p>
+                        <a href="last_news/term1_techcomment.html" class="read-more">Read More</a>
+                    </div>
+
+                    <div class="news-card">
+                        <img src="last_news/images/back_to_school.jpg" alt="Welcome Back to School">
+                        <h3>Welcome Back to School!</h3>
+                        <p style="font-size:0.8em; margin-bottom:5px;"><em>Published: 01/09/2025</em></p>
+                        <p>I hope you all had a restful and enjoyable break. Click to read the full message!</p>
+                        <a href="last_news/welcome_back.html" class="read-more">Read More</a>
+                    </div>
+
+                    <div class="news-card">
+                        <img src="last_news/images/staff-portal.png" alt="New Staff Portal Update">
+                        <h3>New Staff Portal Update </h3>
+                        <p style="font-size:0.8em; margin-bottom:5px;"><em>Published: Ongoing updates</em></p>
+                        <p>Our staff portal is receiving exciting new updates to improve accessibility...</p>
+                        <a href="last_news/staff_portal_update.html" class="read-more">Read More</a>
+                    </div>
+
+                    <div class="news-card">
+                        <img src="last_news/images/student-email.png" alt="Missing Year Group Email Form">
+                        <h3>Missing Year Group Email Form</h3>
+                        <p style="font-size:0.8em; margin-bottom:5px;"><em>Published: 10 July 2025</em></p>
+                        <p>Report students who don’t have access to their year group email accounts...</p>
+                        <a href="last_news/missing_yeargroup_form.html" class="read-more">Read More</a>
+                    </div>
+
+                    <div class="news-card">
+                        <img src="last_news/images/training.png" alt="New Training Materials">
+                        <h3>New Staff Training Materials</h3>
+                        <p style="font-size:0.8em; margin-bottom:5px;"><em>Published: 10 July 2025</em></p>
+                        <p>The updated staff training materials are now available on the L&D site.</p>
+                        <a href="last_news/news-training.html" class="read-more">Read More</a>
+                    </div>
+
+                    <div class="news-card">
+                        <img src="last_news/images/meeting.png" alt="Staff Meeting">
+                        <h3>Staff Meeting Today</h3>
+                        <p style="font-size:0.8em; margin-bottom:5px;"><em>Published: 10 July 2025</em></p>
+                        <p>Don’t forget the all-staff meeting at 2PM in Hall B. Important updates...</p>
+                        <a href="last_news/meeting.html" class="read-more">Read More</a>
+                    </div>
+
+                    <div class="news-card">
+                        <img src="last_news/images/paper_work.png" alt="HR Form Update">
+                        <h3>New HR Form</h3>
+                        <p style="font-size:0.8em; margin-bottom:5px;"><em>Published: 10 July 2025</em></p>
+                        <p>The updated HR feedback form is now available in the HR Drive folder.</p>
+                        <a href="last_news/hr_Form.html" class="read-more">Read More</a>
+                    </div>
+
+                    <div class="news-card">
+                        <img src="last_news/images/exam.png" alt="Exams Notice">
+                        <h3>Year 10 Exams Next Week</h3>
+                        <p style="font-size:0.8em; margin-bottom:5px;"><em>Published: 10 July 2025</em></p>
+                        <p>Please remind students to check the revision timetable and exam rooms...</p>
+                        <a href="last_news/y10_exams.html" class="read-more">Read More</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="quick-links-area">
+            <h3>Quick Links</h3>
+            <ul>
+                <li>
+                    <a href="todo.html"><span class="icon">📝</span> My Tasks</a>
+                </li>
+                <li>
+                    <a href="department-timetables.html" target="_blank"><span class="icon">📅</span> My Schedule</a>
+                </li>
+                <li>
+                    <a href="https://forms.monday.com/forms/6cea2a8aff9d0257a6f8f4e6bdf9eca6?r=euc1" target="_blank"><span class="icon">🖥️</span> IT Helpdesk</a>
+                </li>
+                <li>
+                    <a href="https://drive.google.com/drive/folders/1JLBlBYwsvpdfpbJBQwFVKcli-Ya9fulx?usp=drive_link" target="_blank"><span class="icon">📄</span> Policies & Procedures</a>
+                </li>
+                <li>
+                    <a href="hr_app.html">🧾 Staff HR App</a></div>
+                </li>
+                <li>
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeIRBXbOovuBfvUFNtvbkb81jODB8sZ-Sgd3SnWXG00lM1WwQ/viewform?usp=sf_link" target="_blank"><span class="icon">⚠️</span> Pupil Behaviour Report</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <script src="js/main.js"></script>
+    
+    <script>
+        // Toggle Dropdown function
+        function toggleDropdown(id) {
+            const dropdowns = document.querySelectorAll('.dropdown-section');
+            dropdowns.forEach(section => {
+                if (section.id === id) {
+                    section.style.display = (section.style.display === 'block') ? 'none' : 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        }
+    </script>
+
+    <script>
+        (function(){
+            const role = sessionStorage.getItem('userRole');
+            const fullName = sessionStorage.getItem('fullName') || 'Unknown User';
+            const authorizedRoles = ['admin', 'HR', 'HoD']; // Define allowed roles for admin features
+
+            // --------------------------------------------------------
+            // 1. ADMIN NAVIGATION LINK VISIBILITY
+            // --------------------------------------------------------
+            const adminNavLink = document.getElementById('admin-nav-link');
+            // If the role is NOT one of the authorized roles, hide the navigation link
+            if (adminNavLink && !authorizedRoles.includes(role)) {
+                adminNavLink.style.display = 'none';
+            }
+
+
+            // --------------------------------------------------------
+            // 2. POST NEWS BUTTON VISIBILITY (Updated Logic)
+            // The existing logic already makes it visible for 'staff', 'admin', 'HR'.
+            // To restrict it to just Admin/HR/HoD, we update the check.
+            // --------------------------------------------------------
+            const postArea = document.getElementById('post-news-area');
+            if (postArea) {
+                // Only show if the user is in the authorized roles list
+                if (authorizedRoles.includes(role)) {
+                    postArea.style.display = 'block';
+                } else {
+                    postArea.style.display = 'none'; // Explicitly hide for everyone else
+                }
+            }
+
+
+            // The existing adminDropdown logic in this block seems incomplete/mis-ID'd, so focusing on the features below.
+            // The first script block already handles the `adminDropdown` link visibility using the `admin-nav-link` ID.
+
+            // --------------------------------------------------------
+            // 3. ADMIN / PORTAL MANAGEMENT FEATURES
+            // --------------------------------------------------------
+
+            // Storage keys
+            const NEWS_KEY = 'staffPortal_latestNews';
+            const PORTAL_KEY = 'staffPortal_customPortalItems';
+
+            // Utility: load and save JSON safe
+            function loadJSON(key){
+                try{
+                    const raw = localStorage.getItem(key);
+                    return raw ? JSON.parse(raw) : [];
+                }catch(e){
+                    console.error('Failed to load', key, e);
+                    return [];
+                }
+            }
+            function saveJSON(key, val){
+                try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){ console.error('Failed to save', key, e); }
+            }
+
+            // CRITICAL UPDATE for Dynamic News to use the new card style
+            function renderNews(){
+                const container = document.getElementById('dynamic-news');
+                if (!container) return;
+                const items = loadJSON(NEWS_KEY);
+                container.innerHTML = '';
+                items.slice().reverse().forEach((item, idx) => {
+                    const div = document.createElement('div');
+                    // Use the new CSS class for the compact card format
+                    div.className = 'news-card';
+                    div.innerHTML = `
+                        ${item.image ? `<img src="${item.image}" alt="${escapeHtml(item.title)}">` : ''}
+                        <h3>${escapeHtml(item.title)}</h3>
+                        <p style="font-size:0.8em; margin-bottom:5px;"><em>Published: ${escapeHtml(item.date)}</em></p>
+                        <p>${escapeHtml(item.content)}</p>
+                        ${item.url ? `<a href="${escapeHtml(item.url)}" class="read-more">Read More</a>` : ''}
+                        ${ authorizedRoles.includes(role) ? `<div style="margin-top:.5rem;"><button data-idx="${idx}" class="remove-news">Remove</button></div>` : '' } `;
+                    container.appendChild(div);
+                });
+
+                // Attach remove handlers for authorized roles
+                if (authorizedRoles.includes(role)){
+                    container.querySelectorAll('.remove-news').forEach(btn => {
+                        btn.addEventListener('click', function(){
+                            const i = parseInt(this.dataset.idx,10);
+                            const items = loadJSON(NEWS_KEY);
+                            // items rendered reversed earlier; remove corresponding
+                            const targetIndex = items.length - 1 - i;
+                            if (targetIndex >=0){ items.splice(targetIndex,1); saveJSON(NEWS_KEY, items); renderNews(); }
+                        });
+                    });
+                }
+            }
+
+            // Escaping helper to avoid naive injection
+            function escapeHtml(str){
+                if (!str) return '';
+                return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[s]));
+            }
+
+            // Post news form handler (kept intact)
+            const form = document.getElementById('post-news-form');
+            if (form){
+                form.addEventListener('submit', function(e){
+                    e.preventDefault();
+                    const title = document.getElementById('news-title').value.trim();
+                    const content = document.getElementById('news-content-input').value.trim();
+                    const url = document.getElementById('news-url').value.trim();
+                    const image = document.getElementById('news-image').value.trim();
+                    if (!title || !content){ alert('Please provide title and content.'); return; }
+                    const items = loadJSON(NEWS_KEY);
+                    items.push({ title, content, url, image, author: fullName, date: new Date().toLocaleDateString() });
+                    saveJSON(NEWS_KEY, items);
+                    form.reset();
+                    renderNews();
+                    alert('News posted.');
+                });
+                document.getElementById('cancel-post').addEventListener('click', ()=>form.reset());
+            }
+
+            // Initial render
+            renderNews();
+
+            // OPTIONAL: Admin portal manager modal (kept intact, added authorizedRoles check)
+            if (authorizedRoles.includes(role)){ // Check for ALL authorized roles
+                // Create small floating manager button
+                const mgr = document.createElement('div');
+                mgr.style.position = 'fixed'; mgr.style.right = '12px'; mgr.style.bottom = '12px'; mgr.style.zIndex = 2000;
+                mgr.innerHTML = `<button id="open-portal-mgr">Manage Portal Items</button>`;
+                document.body.appendChild(mgr);
+
+                // Create modal
+                const modal = document.createElement('div');
+                modal.id = 'portal-mgr-modal';
+                modal.style.position = 'fixed'; modal.style.left = 0; modal.style.top = 0; modal.style.right =0; modal.style.bottom =0;
+                modal.style.display = 'none'; modal.style.background = 'rgba(0,0,0,0.4)'; modal.style.padding='40px';
+                modal.innerHTML = `
+                    <div style="background:#fff;padding:20px;max-width:720px;margin:0 auto;border-radius:6px;">
+                        <h3>Portal Manager</h3>
+                        <form id="portal-item-form">
+                            <input id="portal-title" placeholder="Item text (e.g. My Tasks)" style="width:100%;margin-bottom:.5rem;" required />
+                            <input id="portal-url" placeholder="URL (relative or absolute)" style="width:100%;margin-bottom:.5rem;" required />
+                            <input id="portal-section" placeholder="Section id (e.g. myWorkDropdown) - optional" style="width:100%;margin-bottom:.5rem;" />
+                            <div style="display:flex;gap:.5rem;"><button type="submit">Add Item</button><button type="button" id="close-portal-mgr">Close</button></div>
+                        </form>
+                        <h4>Existing Custom Items</h4>
+                        <div id="portal-items-list"></div>
+                    </div>`;
+                document.body.appendChild(modal);
+
+                document.getElementById('open-portal-mgr').addEventListener('click', ()=>{ modal.style.display='block'; renderPortalItems(); });
+                document.getElementById('close-portal-mgr').addEventListener('click', ()=>{ modal.style.display='none'; });
+
+                const pform = document.getElementById('portal-item-form');
+                pform.addEventListener('submit', function(e){
+                    e.preventDefault();
+                    const title = document.getElementById('portal-title').value.trim();
+                    const url = document.getElementById('portal-url').value.trim();
+                    const section = document.getElementById('portal-section').value.trim();
+                    if (!title || !url){ alert('Provide title and URL'); return; }
+                    const items = loadJSON(PORTAL_KEY);
+                    items.push({ title, url, section });
+                    saveJSON(PORTAL_KEY, items);
+                    document.getElementById('portal-title').value = '';
+                    document.getElementById('portal-url').value = '';
+                    document.getElementById('portal-section').value = '';
+                    renderPortalItems();
+                    insertPortalItemToDom({ title, url, section });
+                });
+
+                function renderPortalItems(){
+                    const list = document.getElementById('portal-items-list');
+                    const items = loadJSON(PORTAL_KEY);
+                    list.innerHTML = '';
+                    items.forEach((it,i)=>{
+                        const el = document.createElement('div');
+                        el.style.display='flex'; el.style.justifyContent='space-between'; el.style.alignItems='center'; el.style.padding='.25rem 0';
+                        el.innerHTML = `<div>${escapeHtml(it.title)} — <small>${escapeHtml(it.url)}</small> ${it.section?`<em>(${escapeHtml(it.section)})</em>`:''}</div><div><button data-i="${i}" class="remove-portal">Remove</button></div>`;
+                        list.appendChild(el);
+                    });
+                    list.querySelectorAll('.remove-portal').forEach(btn=>btn.addEventListener('click', function(){
+                        const i = parseInt(this.dataset.i,10); const items = loadJSON(PORTAL_KEY); items.splice(i,1); saveJSON(PORTAL_KEY, items); renderPortalItems(); // TODO: also remove from DOM if inserted
+                    }));
+                }
+
+                function insertPortalItemToDom(item){
+                    // If a section id was provided and exists, insert as a card link
+                    if (!item.section) return;
+                    const section = document.getElementById(item.section);
+                    if (!section) return; // nothing to attach to
+                    const card = document.createElement('div'); card.className='card';
+                    const a = document.createElement('a'); a.href = item.url; a.textContent = item.title; card.appendChild(a);
+                    // Append to first child grid if present
+                    const grid = section.querySelector('.dropdown-grid');
+                    if (grid) grid.appendChild(card);
+                }
+
+                // On load, insert any existing portal items into DOM
+                loadJSON(PORTAL_KEY).forEach(insertPortalItemToDom);
+            }
+        })();
+    </script>
+
+    <footer>
+        <p>© 2025 Staff Portal. All rights reserved.</p>
+        <p>Developed by the IT Support Team</p>
+    </footer>
+</body>
+</html>
