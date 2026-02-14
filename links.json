@@ -5,7 +5,7 @@
     { "name": "IT Helpdesk", "url": "https://forms.monday.com/...", "icon": "🖥️" },
     { "name": "Policies & Procedures", "url": "https://drive.google.com/...", "icon": "📄" },
     { "name": "Pupil Behaviour Report", "url": "https://docs.google.com/...", "icon": "⚠️" },
-    { "name": "HR App", "url": "hr_app.html", "icon": "🧾" }
+    { "name": "HR App", "url": "hr_app.html", "icon": "🧾" },
     {"name": "Test Quick", "url": "test.html", "icon": "➕"}
   ],
   "elevatedLinks": [
