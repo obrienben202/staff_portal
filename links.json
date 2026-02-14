@@ -8,6 +8,10 @@
     { "name": "HR App", "url": "hr_app.html", "icon": "🧾" }
   ],
   "elevatedLinks": [
-    { "name": "Manage Portal Items", "url": "admin_tools.html", "icon": "⚙️" }
+    { "name": "IT Shared Drive", "url": "https://drive.google.com/drive/folders/1in9hWQGuYs-BWCtCdzkgAnwUK8DgUVKy?usp=drive_link", "icon": "📁" },
+    { "name": "Add or Remove Users", "url": "https://docs.google.com/forms/d/e/1FAIpQLScqenQ8vdoJWySdXLi1oAC99OQXPVvHh7WEKRpklQsaVqJ_kA/viewform?usp=publish-editor", "icon": "➕" },
+    { "name": "IT Dashboard", "url": "https://auth.monday.com/auth/login_monday", "icon": "📊" },
+    { "name": "HR Shared Drive", "url": "https://drive.google.com/drive/folders/1-nBowxk60GQ1l7mQsEXSOMj44aUI8nQT?usp=drive_link", "icon": "📁" },
+    { "name": "HR Dashboard", "url": "https://auth.monday.com/auth/login_monday", "icon": "📊" }
   ]
 }
