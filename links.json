@@ -6,6 +6,7 @@
     { "name": "Policies & Procedures", "url": "https://drive.google.com/...", "icon": "📄" },
     { "name": "Pupil Behaviour Report", "url": "https://docs.google.com/...", "icon": "⚠️" },
     { "name": "HR App", "url": "hr_app.html", "icon": "🧾" }
+    {"name": "Test Quick", "url": "test.html", "icon": "➕"}
   ],
   "elevatedLinks": [
     { "name": "IT Shared Drive", "url": "https://drive.google.com/drive/folders/1in9hWQGuYs-BWCtCdzkgAnwUK8DgUVKy?usp=drive_link", "icon": "📁" },
