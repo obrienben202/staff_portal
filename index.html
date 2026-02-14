@@ -442,37 +442,50 @@
             }
         })();
     </script>
-        <script> 
-            async function updatePortalLinks() {
+    <script>
+        async function updatePortalLinks() {
+        try {
             const response = await fetch('links.json');
+            if (!response.ok) throw new Error('Could not fetch links.json');
             const data = await response.json();
             const container = document.getElementById('dynamic-links');
 
-            // Define who gets to see the "extra" stuff
+            if (!container) return; // Stop if the HTML element isn't there yet
+
+            // SAFEGUARD: Check if userRole exists, otherwise default to 'Staff'
+            // We check localStorage or window object depending on how your login works
+            const currentRole = window.userRole || localStorage.getItem('userRole') || 'Staff';
+            
             const powerUsers = ['Admin', 'HR', 'HoD'];
-    
-            // We assume 'userRole' is a variable you already have from your login system
-            const isPowerUser = powerUsers.includes(userRole);
+            const isPowerUser = powerUsers.includes(currentRole);
 
             let listHtml = '';
 
-            // 1. Add links everyone sees (including HR App)
-            data.standardLinks.forEach(link => {
-            listHtml += `<li><a href="${link.url}"><span class="icon">${link.icon}</span> ${link.name}</a></li>`;
-            });
+            // 1. Add standard links (Everyone sees HR App here)
+            if (data.standardLinks) {
+                data.standardLinks.forEach(link => {
+                    listHtml += `<li><a href="${link.url}"><span class="icon">${link.icon}</span> ${link.name}</a></li>`;
+                });
+            }
 
-            // 2. Add the special links ONLY if they are Admin, HR, or HoD
-            if (isPowerUser) {
-            data.elevatedLinks.forEach(link => {
-            listHtml += `<li class="admin-link"><a href="${link.url}"><span class="icon">${link.icon}</span> ${link.name}</a></li>`;
-            });
+            // 2. Add elevated links ONLY if they are Admin, HR, or HoD
+            if (isPowerUser && data.elevatedLinks) {
+                data.elevatedLinks.forEach(link => {
+                    listHtml += `<li class="admin-link"><a href="${link.url}"><span class="icon">${link.icon}</span> ${link.name}</a></li>`;
+                });
             }
 
             container.innerHTML = listHtml;
-            }
-            // Call it immediately
-            updatePortalLinks();
-        </script>
+        } catch (error) {
+            console.error("Quick Links failed to load:", error);
+            // Fallback: If it fails, at least show a message or manual link
+            document.getElementById('dynamic-links').innerHTML = "<li>Error loading links.</li>";
+        }
+    }
+
+        // Run when the page is fully loaded to ensure userRole is ready
+        window.addEventListener('load', updatePortalLinks);
+    </script>
 
     <footer>
         <p>© 2025 Staff Portal. All rights reserved.</p>
