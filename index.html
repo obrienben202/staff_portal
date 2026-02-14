@@ -441,37 +441,38 @@
                 loadJSON(PORTAL_KEY).forEach(insertPortalItemToDom);
             }
         })();
+    </script>
+        <script> 
+            async function updatePortalLinks() {
+            const response = await fetch('links.json');
+            const data = await response.json();
+            const container = document.getElementById('dynamic-links');
 
-        async function updatePortalLinks() {
-        const response = await fetch('links.json');
-        const data = await response.json();
-        const container = document.getElementById('dynamic-links');
-
-        // Define who gets to see the "extra" stuff
-        const powerUsers = ['Admin', 'HR', 'HoD'];
+            // Define who gets to see the "extra" stuff
+            const powerUsers = ['Admin', 'HR', 'HoD'];
     
-        // We assume 'userRole' is a variable you already have from your login system
-        const isPowerUser = powerUsers.includes(userRole);
+            // We assume 'userRole' is a variable you already have from your login system
+            const isPowerUser = powerUsers.includes(userRole);
 
-        let listHtml = '';
+            let listHtml = '';
 
-        // 1. Add links everyone sees (including HR App)
-        data.standardLinks.forEach(link => {
-        listHtml += `<li><a href="${link.url}"><span class="icon">${link.icon}</span> ${link.name}</a></li>`;
-        });
+            // 1. Add links everyone sees (including HR App)
+            data.standardLinks.forEach(link => {
+            listHtml += `<li><a href="${link.url}"><span class="icon">${link.icon}</span> ${link.name}</a></li>`;
+            });
 
-        // 2. Add the special links ONLY if they are Admin, HR, or HoD
-        if (isPowerUser) {
-        data.elevatedLinks.forEach(link => {
+            // 2. Add the special links ONLY if they are Admin, HR, or HoD
+            if (isPowerUser) {
+            data.elevatedLinks.forEach(link => {
             listHtml += `<li class="admin-link"><a href="${link.url}"><span class="icon">${link.icon}</span> ${link.name}</a></li>`;
-        });
-        }
+            });
+            }
 
             container.innerHTML = listHtml;
-        }
-        // --- PUT IT HERE ---
-        window.onload = updatePortalLinks;
-    </script>
+            }
+            // --- PUT IT HERE ---
+            window.onload = updatePortalLinks;
+        </script>
 
     <footer>
         <p>© 2025 Staff Portal. All rights reserved.</p>
