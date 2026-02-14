@@ -221,27 +221,9 @@
             </section>
         </div>
 
-        <div class="quick-links-area">
+       <div class="quick-links-area">
             <h3>Quick Links</h3>
-            <ul>
-                <li>
-                    <a href="todo.html"><span class="icon">📝</span> My Tasks</a>
-                </li>
-                <li>
-                    <a href="department-timetables.html" target="_blank"><span class="icon">📅</span> My Schedule</a>
-                </li>
-                <li>
-                    <a href="https://forms.monday.com/forms/6cea2a8aff9d0257a6f8f4e6bdf9eca6?r=euc1" target="_blank"><span class="icon">🖥️</span> IT Helpdesk</a>
-                </li>
-                <li>
-                    <a href="https://drive.google.com/drive/folders/1JLBlBYwsvpdfpbJBQwFVKcli-Ya9fulx?usp=drive_link" target="_blank"><span class="icon">📄</span> Policies & Procedures</a>
-                </li>
-                <li>
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeIRBXbOovuBfvUFNtvbkb81jODB8sZ-Sgd3SnWXG00lM1WwQ/viewform?usp=sf_link" target="_blank"><span class="icon">⚠️</span> Pupil Behaviour Report</a>
-                </li>
-				<li>
-                    <a href="hr_app.html"><span class="icon">🧾</span> HR App</a>
-                </li>
+            <ul id="dynamic-links">
             </ul>
         </div>
     </div>
@@ -459,6 +441,36 @@
                 loadJSON(PORTAL_KEY).forEach(insertPortalItemToDom);
             }
         })();
+
+        async function updatePortalLinks() {
+        const response = await fetch('links.json');
+        const data = await response.json();
+        const container = document.getElementById('dynamic-links');
+
+        // Define who gets to see the "extra" stuff
+        const powerUsers = ['Admin', 'HR', 'HoD'];
+    
+        // We assume 'userRole' is a variable you already have from your login system
+        const isPowerUser = powerUsers.includes(userRole);
+
+        let listHtml = '';
+
+        // 1. Add links everyone sees (including HR App)
+        data.standardLinks.forEach(link => {
+        listHtml += `<li><a href="${link.url}"><span class="icon">${link.icon}</span> ${link.name}</a></li>`;
+        });
+
+        // 2. Add the special links ONLY if they are Admin, HR, or HoD
+        if (isPowerUser) {
+        data.elevatedLinks.forEach(link => {
+            listHtml += `<li class="admin-link"><a href="${link.url}"><span class="icon">${link.icon}</span> ${link.name}</a></li>`;
+        });
+        }
+
+            container.innerHTML = listHtml;
+        }
+        // --- PUT IT HERE ---
+        window.onload = updatePortalLinks;
     </script>
 
     <footer>

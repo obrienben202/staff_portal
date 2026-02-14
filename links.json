@@ -1,0 +1,13 @@
+{
+  "standardLinks": [
+    { "name": "My Tasks", "url": "todo.html", "icon": "📝" },
+    { "name": "My Schedule", "url": "department-timetables.html", "icon": "📅" },
+    { "name": "IT Helpdesk", "url": "https://forms.monday.com/...", "icon": "🖥️" },
+    { "name": "HR App", "url": "hr_app.html", "icon": "🧾" },
+    { "name": "Policies & Procedures", "url": "https://drive.google.com/...", "icon": "📄" }
+  ],
+  "elevatedLinks": [
+    { "name": "Admin Dashboard", "url": "admin_panel.html", "icon": "⚙️" },
+    { "name": "Staff Management", "url": "staff_mgmt.html", "icon": "👥" }
+  ]
+}
