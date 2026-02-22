@@ -5,8 +5,7 @@
     { "name": "IT Helpdesk", "url": "https://forms.monday.com/...", "icon": "🖥️" },
     { "name": "Policies & Procedures", "url": "https://drive.google.com/...", "icon": "📄" },
     { "name": "Pupil Behaviour Report", "url": "https://docs.google.com/...", "icon": "⚠️" },
-    { "name": "HR App", "url": "hr_app.html", "icon": "🧾" },
-    {"name": "Test Quick", "url": "test.html", "icon": "➕"}
+    { "name": "HR App", "url": "hr_app.html", "icon": "🧾" }
   ],
   "adminLinks": [
     { "name": "IT Shared Drive", "url": "https://drive.google.com/drive/folders/1in9hWQGuYs-BWCtCdzkgAnwUK8DgUVKy?usp=drive_link", "icon": "📁" },
@@ -15,4 +14,5 @@
     { "name": "HR Shared Drive", "url": "https://drive.google.com/drive/folders/1-nBowxk60GQ1l7mQsEXSOMj44aUI8nQT?usp=drive_link", "icon": "📁" },
     { "name": "HR Dashboard", "url": "https://auth.monday.com/auth/login_monday", "icon": "📊" }
   ]
+
 }
