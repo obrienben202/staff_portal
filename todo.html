@@ -30,8 +30,12 @@
         .p-medium { background: #ffa500; color: white; }
         .p-low { background: #3498db; color: white; }
 
-        .search-container { margin: 15px 0; width: 100%; }
-        #taskSearch { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #ddd; font-size: 1em; box-sizing: border-box; }
+        /* Modern Filter Bar */
+        .filter-bar { display: flex; gap: 10px; margin: 15px 0; align-items: center; background: #f1f1f1; padding: 10px; border-radius: 8px; }
+        #taskSearch { flex: 3; padding: 12px; border-radius: 6px; border: 1px solid #ddd; font-size: 1em; }
+        #priorityFilter { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid #ddd; font-weight: bold; cursor: pointer; }
+        .btn-clear { flex: 0.5; background: #e74c3c; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-clear:hover { background: #c0392b; }
 
         .task-card.overdue { border: 2px solid #e74c3c !important; background-color: #fff5f5 !important; animation: pulse-red 2s infinite; }
         @keyframes pulse-red {
@@ -81,8 +85,15 @@
         </div>
 
         <div id="taskBoardUI">
-            <div class="search-container">
+            <div class="filter-bar">
                 <input type="text" id="taskSearch" placeholder="🔍 Search tasks, staff, or keywords..." onkeyup="renderTasks()">
+                <select id="priorityFilter" onchange="renderTasks()">
+                    <option value="all">All Priorities</option>
+                    <option value="High">🔴 High</option>
+                    <option value="Medium">🟠 Medium</option>
+                    <option value="Low">🔵 Low</option>
+                </select>
+                <button class="btn-clear" onclick="clearFilters()">Reset</button>
             </div>
 
             <div class="task-form-container" id="taskForm" style="display: none;">
@@ -114,12 +125,13 @@
             </div>
         </div>
     </main>
-<footer>
+
+    <footer>
         <button onclick="window.print()" class="btn-check">🖨️ Print List</button>
         <br><br>
         <a href="index.html" class="back-link">🏠 Return to Main Portal</a>
     </footer>
-    
+
     <script>
         const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbx5D1Ue49u80-Aj5QCXkFU_e-gqY89jr2ntALF_DD2H15Tvm5oh0ZujBihr2oOnEkXf/exec";
         const fullName = sessionStorage.getItem("fullName") || "Staff Member";
@@ -144,6 +156,12 @@
         let tasks = [];
         let myChart = null;
 
+        function clearFilters() {
+            document.getElementById("taskSearch").value = "";
+            document.getElementById("priorityFilter").value = "all";
+            renderTasks();
+        }
+
         function toggleAnalytics() {
             isAnalyticsView = !isAnalyticsView;
             document.getElementById("taskBoardUI").style.display = isAnalyticsView ? "none" : "block";
@@ -158,7 +176,6 @@
                 const data = await response.json();
                 tasks = data.map(t => ({ ...t, completed: (t.completed === true || t.completed === "true") }));
                 
-                // Update timestamp
                 const now = new Date();
                 document.getElementById("syncTime").innerText = now.toLocaleTimeString();
 
@@ -201,15 +218,20 @@
         function renderTasks() {
             const lists = { incomplete: document.getElementById("incompleteList"), completed: document.getElementById("completedList"), overdue: document.getElementById("overdueList") };
             Object.values(lists).forEach(el => el.innerHTML = '');
+            
             const searchTerm = document.getElementById("taskSearch").value.toLowerCase();
+            const priorityFilter = document.getElementById("priorityFilter").value;
             const now = new Date();
 
             tasks.forEach(task => {
                 if (userRole === "Staff") {
                     if (task.assignedTo !== "Everybody" && !task.assignedTo.includes(userDept)) return;
                 }
+                
                 const matchesSearch = task.text.toLowerCase().includes(searchTerm) || task.assignedTo.toLowerCase().includes(searchTerm);
-                if (!matchesSearch) return;
+                const matchesPriority = (priorityFilter === "all" || task.priority === priorityFilter);
+                
+                if (!matchesSearch || !matchesPriority) return;
 
                 const isOverdue = !task.completed && task.dueDate && (new Date(task.dueDate) < now);
                 const pClass = 'p-' + (task.priority || 'medium').toLowerCase();
@@ -240,7 +262,7 @@
             const assignedTo = document.getElementById("assigneeSelect").value;
             const dueDate = document.getElementById("dueDate").value;
             const priority = document.getElementById("prioritySelect").value;
-            if (!text) return alert("Task needed");
+            if (!text) return alert("Task description needed");
             await fetch(SHEET_API_URL, { method: "POST", body: JSON.stringify({ text, assignedTo, dueDate, priority, createdBy: fullName }), headers: { "Content-Type": "text/plain" } });
             document.getElementById("taskText").value = "";
             fetchTasks();
@@ -252,7 +274,7 @@
         }
 
         async function deleteTask(id) {
-            if (confirm("Delete?")) {
+            if (confirm("Permanently delete this task?")) {
                 await fetch(`${SHEET_API_URL}?action=delete`, { method: "POST", body: JSON.stringify({ id }), headers: { "Content-Type": "text/plain" } });
                 fetchTasks();
             }
@@ -262,6 +284,4 @@
         setInterval(fetchTasks, 30000);
     </script>
 </body>
-
 </html>
-
