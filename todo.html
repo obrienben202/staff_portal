@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff To-Do List & Analytics</title>
+    <link href="todo.css" rel="stylesheet" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .completion-info { margin-top: 10px; padding-top: 8px; border-top: 1px dashed #ccc; font-size: 0.85em; color: #27ae60; font-weight: bold; }
+        #notifyBtn { background: #ff9800; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 10px; font-size: 0.8em; }
+        
+        /* Analytics Styling */
+        #analyticsSection { display: none; background: white; padding: 20px; border-radius: 8px; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 100%; }
+        .chart-wrapper { position: relative; height: 350px; width: 100%; margin: 20px 0; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #ddd; }
+        .stat-card h3 { margin: 0; font-size: 0.8em; color: #666; text-transform: uppercase; }
+        .stat-card p { margin: 5px 0 0; font-size: 1.4em; font-weight: bold; }
+        
+        .btn-toggle { background: #607d8b; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 10px; }
+
+        /* Filter & Timestamp Styling */
+        .analytics-filter-row { margin-bottom: 10px; display: flex; align-items: center; gap: 10px; font-weight: bold; color: #555; }
+        #deptFilterAnalytics { padding: 8px; border-radius: 5px; border: 1px solid #ccc; flex-grow: 1; }
+        .last-updated { font-size: 0.8em; color: #888; margin-bottom: 20px; font-style: italic; }
+
+        .priority-badge { font-size: 0.75em; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 5px; text-transform: uppercase; }
+        .p-high { background: #ff4d4d; color: white; }
+        .p-medium { background: #ffa500; color: white; }
+        .p-low { background: #3498db; color: white; }
+
+        .search-container { margin: 15px 0; width: 100%; }
+        #taskSearch { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #ddd; font-size: 1em; box-sizing: border-box; }
+
+        .task-card.overdue { border: 2px solid #e74c3c !important; background-color: #fff5f5 !important; animation: pulse-red 2s infinite; }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="portal-header">
+        <div class="header-content">
+            <h1>📝 Staff To-Do List</h1>
+            <div class="user-badge">
+                Logged in as: <span id="username">Loading...</span>
+                <button id="notifyBtn" onclick="requestNotificationPermission()">🔔 Alerts</button>
+                <button id="toggleView" class="btn-toggle" style="display:none;" onclick="toggleAnalytics()">📊 Analytics</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="analyticsSection">
+            <div class="analytics-filter-row">
+                <span>Performance for:</span>
+                <select id="deptFilterAnalytics" onchange="updateAnalytics()">
+                    <option value="all">School Overview</option>
+                    <option value="HR Team">HR Team</option>
+                    <option value="IT Team">IT Team</option>
+                    <option value="ALN Team">ALN Team</option>
+                    <option value="Maths Team">Maths Team</option>
+                    <option value="English Team">English Team</option>
+                    <option value="Science Team">Science Team</option>
+                    <option value="Admin Team">Admin Team</option>
+                </select>
+            </div>
+            <div class="last-updated">Last data sync: <span id="syncTime">Never</span></div>
+            
+            <div class="stats-grid">
+                <div class="stat-card"><h3>Total</h3><p id="statTotal">0</p></div>
+                <div class="stat-card"><h3>Done</h3><p id="statDone" style="color: #27ae60;">0</p></div>
+                <div class="stat-card"><h3>Pending</h3><p id="statPending" style="color: #f39c12;">0</p></div>
+                <div class="stat-card"><h3>Overdue</h3><p id="statOverdue" style="color: #e74c3c;">0</p></div>
+            </div>
+            <div class="chart-wrapper"><canvas id="deptChart"></canvas></div>
+        </div>
+
+        <div id="taskBoardUI">
+            <div class="search-container">
+                <input type="text" id="taskSearch" placeholder="🔍 Search tasks, staff, or keywords..." onkeyup="renderTasks()">
+            </div>
+
+            <div class="task-form-container" id="taskForm" style="display: none;">
+                <div class="form-header">Add New Task</div>
+                <div class="form-row">
+                    <input type="text" id="taskText" placeholder="Task description...">
+                    <input type="date" id="dueDate">
+                    <select id="assigneeSelect">
+                        <option value="Everybody">Everybody</option>
+                        <option value="HR Team">HR Team</option>
+                        <option value="IT Team">IT Team</option>
+                        <option value="ALN Team">ALN Team</option>
+                        <option value="Admin Team">Admin Team</option>
+                        <option value="Maths Team">Maths Team</option>
+                    </select>
+                    <select id="prioritySelect">
+                        <option value="Low">Low</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                    <button onclick="addTask()" class="btn-add">Add Task</button>
+                </div>
+            </div>
+
+            <div class="kanban-board">
+                <section class="kanban-col"><h2>📋 To-Do</h2><div id="incompleteList"></div></section>
+                <section class="kanban-col"><h2>⚠️ Overdue</h2><div id="overdueList"></div></section>
+                <section class="kanban-col" id="completedCol"><h2>✅ Completed</h2><div id="completedList"></div></section>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbx5D1Ue49u80-Aj5QCXkFU_e-gqY89jr2ntALF_DD2H15Tvm5oh0ZujBihr2oOnEkXf/exec";
+        const fullName = sessionStorage.getItem("fullName") || "Staff Member";
+        const rawRole = (sessionStorage.getItem("userRole") || "staff").toLowerCase();
+        const userDept = sessionStorage.getItem("userDept") || ""; 
+        let userRole = (rawRole === "admin" || rawRole === "hr") ? "HR" : (rawRole === "hod" ? "HoD" : "Staff");
+
+        document.getElementById("username").innerText = `${fullName} (${userRole})`;
+
+        let isAnalyticsView = false;
+        if (userRole !== "Staff") {
+            isAnalyticsView = true;
+            document.getElementById("taskForm").style.display = "block";
+            document.getElementById("toggleView").style.display = "inline-block";
+            document.getElementById("taskBoardUI").style.display = "none";
+            document.getElementById("analyticsSection").style.display = "block";
+            document.getElementById("toggleView").innerText = "📋 View Tasks";
+        } else {
+            document.getElementById("completedCol").style.display = "none";
+        }
+
+        let tasks = [];
+        let myChart = null;
+
+        function toggleAnalytics() {
+            isAnalyticsView = !isAnalyticsView;
+            document.getElementById("taskBoardUI").style.display = isAnalyticsView ? "none" : "block";
+            document.getElementById("analyticsSection").style.display = isAnalyticsView ? "block" : "none";
+            document.getElementById("toggleView").innerText = isAnalyticsView ? "📋 View Tasks" : "📊 Analytics";
+            if (isAnalyticsView) updateAnalytics();
+        }
+
+        async function fetchTasks() {
+            try {
+                const response = await fetch(`${SHEET_API_URL}?action=getTasks`);
+                const data = await response.json();
+                tasks = data.map(t => ({ ...t, completed: (t.completed === true || t.completed === "true") }));
+                
+                // Update timestamp
+                const now = new Date();
+                document.getElementById("syncTime").innerText = now.toLocaleTimeString();
+
+                renderTasks();
+                if (isAnalyticsView) updateAnalytics();
+            } catch (err) { console.error(err); }
+        }
+
+        function updateAnalytics() {
+            const selectedDept = document.getElementById("deptFilterAnalytics").value;
+            const now = new Date();
+            const filtered = selectedDept === "all" ? tasks : tasks.filter(t => t.assignedTo === selectedDept);
+
+            document.getElementById("statTotal").innerText = filtered.length;
+            document.getElementById("statDone").innerText = filtered.filter(t => t.completed).length;
+            document.getElementById("statPending").innerText = filtered.length - filtered.filter(t => t.completed).length;
+            document.getElementById("statOverdue").innerText = filtered.filter(t => !t.completed && t.dueDate && new Date(t.dueDate) < now).length;
+
+            const deptData = {};
+            filtered.forEach(t => {
+                const dept = t.assignedTo || "Unassigned";
+                if (!deptData[dept]) deptData[dept] = { done: 0, pending: 0 };
+                t.completed ? deptData[dept].done++ : deptData[dept].pending++;
+            });
+
+            if (myChart) myChart.destroy();
+            myChart = new Chart(document.getElementById('deptChart'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(deptData),
+                    datasets: [
+                        { label: 'Done', data: Object.values(deptData).map(d => d.done), backgroundColor: '#27ae60' },
+                        { label: 'Pending', data: Object.values(deptData).map(d => d.pending), backgroundColor: '#f39c12' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { stacked: true }, x: { stacked: true } } }
+            });
+        }
+
+        function renderTasks() {
+            const lists = { incomplete: document.getElementById("incompleteList"), completed: document.getElementById("completedList"), overdue: document.getElementById("overdueList") };
+            Object.values(lists).forEach(el => el.innerHTML = '');
+            const searchTerm = document.getElementById("taskSearch").value.toLowerCase();
+            const now = new Date();
+
+            tasks.forEach(task => {
+                if (userRole === "Staff") {
+                    if (task.assignedTo !== "Everybody" && !task.assignedTo.includes(userDept)) return;
+                }
+                const matchesSearch = task.text.toLowerCase().includes(searchTerm) || task.assignedTo.toLowerCase().includes(searchTerm);
+                if (!matchesSearch) return;
+
+                const isOverdue = !task.completed && task.dueDate && (new Date(task.dueDate) < now);
+                const pClass = 'p-' + (task.priority || 'medium').toLowerCase();
+
+                const card = document.createElement('div');
+                card.className = `task-card ${task.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}`;
+                card.innerHTML = `
+                    <div class="card-tag">${task.assignedTo} <span class="priority-badge ${pClass}">${task.priority || 'Med'}</span></div>
+                    <div class="card-text">${task.text}</div>
+                    <div class="card-meta">
+                        ${task.dueDate ? `<span>📅 ${new Date(task.dueDate).toLocaleDateString('en-GB')}</span>` : ''}
+                        <span>👤 ${task.createdBy}</span>
+                    </div>
+                    ${task.completed ? `<div class="completion-info">✔️ ${task.completedBy}<br>🕒 ${new Date(task.completedAt).toLocaleString('en-GB')}</div>` : ''}
+                    <div class="card-actions">
+                        <button class="btn-check" onclick="toggleComplete('${task.id}', ${!task.completed})">${task.completed ? 'Undo' : 'Done'}</button>
+                        ${userRole !== 'Staff' ? `<button class="btn-del" onclick="deleteTask('${task.id}')">🗑️</button>` : ''}
+                    </div>
+                `;
+                if (task.completed) lists.completed.appendChild(card);
+                else if (isOverdue) lists.overdue.appendChild(card);
+                else lists.incomplete.appendChild(card);
+            });
+        }
+
+        async function addTask() {
+            const text = document.getElementById("taskText").value.trim();
+            const assignedTo = document.getElementById("assigneeSelect").value;
+            const dueDate = document.getElementById("dueDate").value;
+            const priority = document.getElementById("prioritySelect").value;
+            if (!text) return alert("Task needed");
+            await fetch(SHEET_API_URL, { method: "POST", body: JSON.stringify({ text, assignedTo, dueDate, priority, createdBy: fullName }), headers: { "Content-Type": "text/plain" } });
+            document.getElementById("taskText").value = "";
+            fetchTasks();
+        }
+
+        async function toggleComplete(id, completed) {
+            await fetch(`${SHEET_API_URL}?action=update`, { method: "POST", body: JSON.stringify({ id, completed, completedBy: fullName }), headers: { "Content-Type": "text/plain" } });
+            fetchTasks();
+        }
+
+        async function deleteTask(id) {
+            if (confirm("Delete?")) {
+                await fetch(`${SHEET_API_URL}?action=delete`, { method: "POST", body: JSON.stringify({ id }), headers: { "Content-Type": "text/plain" } });
+                fetchTasks();
+            }
+        }
+
+        fetchTasks();
+        setInterval(fetchTasks, 30000);
+    </script>
+</body>
+</html>
