@@ -114,7 +114,12 @@
             </div>
         </div>
     </main>
-
+<footer>
+        <button onclick="window.print()" class="btn-check">🖨️ Print List</button>
+        <br><br>
+        <a href="index.html" class="back-link">🏠 Return to Main Portal</a>
+    </footer>
+    
     <script>
         const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbx5D1Ue49u80-Aj5QCXkFU_e-gqY89jr2ntALF_DD2H15Tvm5oh0ZujBihr2oOnEkXf/exec";
         const fullName = sessionStorage.getItem("fullName") || "Staff Member";
@@ -257,4 +262,5 @@
         setInterval(fetchTasks, 30000);
     </script>
 </body>
+
 </html>
