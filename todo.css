@@ -1,0 +1,175 @@
+:root {
+    --navy: #1a2a44;
+    --orange: #ffa500;
+    --bg: #f0f2f5;
+    --white: #ffffff;
+    --text: #333;
+    --danger: #d32f2f;
+    --success: #2e7d32;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg);
+    margin: 0;
+    color: var(--text);
+}
+
+/* Header styling to match Main Portal */
+.portal-header {
+    background-color: var(--navy);
+    color: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header-content h1 { margin: 0; font-size: 1.5rem; }
+
+.user-badge {
+    background: rgba(255,255,255,0.1);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* Form Styling */
+.task-form-container {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.form-header {
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: var(--navy);
+    border-bottom: 2px solid var(--bg);
+}
+
+.form-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+input, select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex: 1;
+}
+
+.btn-add {
+    background-color: var(--orange);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-add:hover { background-color: #e69500; }
+
+/* Kanban Columns */
+.kanban-board {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.kanban-col {
+    flex: 1;
+    background: #e4e6eb;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 400px;
+}
+
+.kanban-col h2 {
+    font-size: 1.1rem;
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(0,0,0,0.05);
+}
+
+/* Task Cards */
+.task-card {
+    background: var(--white);
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border-left: 5px solid var(--navy);
+    transition: transform 0.2s;
+}
+
+.task-card:hover { transform: translateY(-2px); }
+
+.card-tag {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: var(--navy);
+    background: #eef2ff;
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.card-text { font-weight: 500; margin-bottom: 10px; }
+
+.card-meta {
+    font-size: 0.8rem;
+    color: #666;
+    display: flex;
+    justify-content: space-between;
+}
+
+.card-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Special States */
+.overdue { border-left-color: var(--danger); }
+.overdue-section h2 { color: var(--danger); }
+
+.completed { opacity: 0.7; border-left-color: var(--success); }
+
+.btn-check { background: none; border: 1px solid #ddd; cursor: pointer; padding: 5px 10px; border-radius: 4px; }
+.btn-del { background: none; border: none; cursor: pointer; color: var(--danger); }
+
+footer { text-align: center; margin: 40px 0; }
+.back-link { text-decoration: none; color: var(--navy); font-weight: bold; }
+
+@media print {
+    .portal-header, .task-form-container, .filters, footer, .btn-check, .btn-del {
+        display: none !important;
+    }
+    .kanban-board {
+        display: block;
+    }
+    .task-card {
+        border: 1px solid #ccc;
+        break-inside: avoid;
+    }
+}

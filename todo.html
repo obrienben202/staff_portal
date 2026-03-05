@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff To-Do List</title>
+    <link href="todo.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+
+    <header class="portal-header">
+        <div class="header-content">
+            <h1>📝 Staff To-Do List</h1>
+            <div class="user-badge">
+                Logged in as: <span id="username">Loading...</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="task-form-container" id="taskForm" style="display: none;">
+            <div class="form-header">Add New Task</div>
+            <div class="form-row">
+                <input type="text" id="taskText" placeholder="What needs to be done?">
+                <input type="date" id="dueDate" title="Due Date">
+                <select id="assigneeSelect">
+                    <option value="">Assign to...</option>
+                    <option value="Everybody">Everybody</option>
+                    <option value="HR Team">HR</option>
+                    <option value="IT Team">IT</option>
+                    <option value="Exam Team">Exam</option>
+                    <option value="Maths Team">Maths</option>
+                    <option value="English Team">English</option>
+                    <option value="Science Team">Science</option>
+                    <option value="History Team">History</option>
+                    <option value="Geography Team">Geography</option>
+                    <option value="Art Team">Art</option>
+                    <option value="Music Team">Music</option>
+                    <option value="Sports Team">Sports</option>
+                    <option value="ALN Team">ALN</option>
+                    <option value="Admin Team">Admin</option>
+                    <option value="Welsh Team">Welsh</option>
+                    <option value="French Team">French</option>
+                </select>
+                <button onclick="addTask()" class="btn-add">Add Task</button>
+            </div>
+        </div>
+
+        <div class="filters" id="managementFilters" style="display: none;">
+            <select id="filterStatus">
+                <option value="all">All Statuses</option>
+                <option value="incomplete">Incomplete Only</option>
+                <option value="completed">Completed Only</option>
+            </select>
+            <select id="filterAssignee">
+                <option value="all">All Teams</option>
+            </select>
+        </div>
+
+        <div class="kanban-board">
+            <section class="kanban-col incomplete-section">
+                <h2>📋 To-Do</h2>
+                <div class="task-list" id="incompleteList"></div>
+            </section>
+
+            <section class="kanban-col overdue-section">
+                <h2>⚠️ Overdue</h2>
+                <div class="task-list" id="overdueList"></div>
+            </section>
+
+              <section class="kanban-col completed-section" id="completedCol">
+                <h2>✅ Completed</h2>
+                <div class="task-list" id="completedList"></div>
+              </section>
+        </div>
+    </main>
+
+    <footer>
+      <button onclick="window.print()" class="btn-check" style="margin-bottom: 20px;">🖨️ Print My List</button>
+    <br>
+        <a href="index.html" class="back-link">🏠 Return to Main Portal</a>
+    </footer>
+
+    <script>
+        const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbx5D1Ue49u80-Aj5QCXkFU_e-gqY89jr2ntALF_DD2H15Tvm5oh0ZujBihr2oOnEkXf/exec";
+        
+        // 1. UPDATED: Retrieve User Info AND Department from Portal Session
+        const fullName = sessionStorage.getItem("fullName") || "Staff Member";
+        const rawRole = (sessionStorage.getItem("userRole") || "staff").toLowerCase();
+        const userDept = sessionStorage.getItem("userDept") || ""; // Pulls "IT", "ALN", etc.
+        
+        // Normalize Role for UI logic
+        let userRole = "Staff";
+        if (rawRole === "admin" || rawRole === "hr") userRole = "HR";
+        if (rawRole === "hod") userRole = "HoD";
+
+        document.getElementById("username").innerText = `${fullName} (${userRole})`;
+
+        // Show Management Tools if HR or HoD
+        if (userRole !== "Staff") {
+            document.getElementById("taskForm").style.display = "block";
+            document.getElementById("managementFilters").style.display = "flex";
+        } else {
+            document.getElementById("completedCol").style.display = "none";
+        }
+
+        let tasks = [];
+
+        async function fetchTasks() {
+            try {
+                const response = await fetch(`${SHEET_API_URL}?action=getTasks`);
+                const data = await response.json();
+                tasks = data.map(t => ({
+                    ...t,
+                    completed: (t.completed === true || t.completed === "true" || t.completed === "TRUE")
+                }));
+                renderTasks();
+                populateAssigneeFilter();
+            } catch (err) {
+                console.error("Error fetching tasks:", err);
+            }
+        }
+
+        function renderTasks() {
+            const incompleteList = document.getElementById("incompleteList");
+            const completedList = document.getElementById("completedList");
+            const overdueList = document.getElementById("overdueList");
+
+            [incompleteList, completedList, overdueList].forEach(el => el.innerHTML = '');
+
+            const now = new Date();
+
+            tasks.forEach(task => {
+                // 2. UPDATED: Department Filtering Logic
+                if (userRole === "Staff") {
+                    // Staff only see tasks for "Everybody" OR tasks containing their Department name (e.g., "IT Team")
+                    const isForMe = (task.assignedTo === "Everybody" || task.assignedTo.includes(userDept));
+                    if (!isForMe) return; 
+                } else {
+                    // Admins/HR/HoD use the manual filters
+                    const statusF = document.getElementById('filterStatus').value;
+                    const assignF = document.getElementById('filterAssignee').value;
+                    if (statusF === 'completed' && !task.completed) return;
+                    if (statusF === 'incomplete' && task.completed) return;
+                    if (assignF !== 'all' && task.assignedTo !== assignF) return;
+                }
+
+                const isOverdue = !task.completed && task.dueDate && (new Date(task.dueDate) < now);
+                
+                const card = document.createElement('div');
+                card.className = `task-card ${task.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}`;
+                
+                card.innerHTML = `
+                    <div class="card-tag">${task.assignedTo}</div>
+                    <div class="card-text">${task.text}</div>
+                    <div class="card-meta">
+                        ${task.dueDate ? `<span>📅 ${new Date(task.dueDate).toLocaleDateString()}</span>` : ''}
+                        <span>👤 ${task.createdBy}</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-check" onclick="toggleComplete('${task.id}', ${!task.completed})">
+                            ${task.completed ? '↩️ Undo' : '✔️ Done'}
+                        </button>
+                        ${userRole !== 'Staff' ? `<button class="btn-del" onclick="deleteTask('${task.id}')">🗑️</button>` : ''}
+                    </div>
+                `;
+
+                if (task.completed) completedList.appendChild(card);
+                else if (isOverdue) overdueList.appendChild(card);
+                else incompleteList.appendChild(card);
+            });
+        }
+
+        async function addTask() {
+            const text = document.getElementById("taskText").value.trim();
+            const assignedTo = document.getElementById("assigneeSelect").value;
+            const dueDate = document.getElementById("dueDate").value;
+
+            if (!text || !assignedTo) return alert("Fill in Task and Assignee");
+
+            const taskData = { text, assignedTo, dueDate, createdBy: fullName };
+
+            await fetch(SHEET_API_URL, {
+                method: "POST",
+                body: JSON.stringify(taskData),
+                headers: { "Content-Type": "text/plain" }
+            });
+
+            document.getElementById("taskText").value = "";
+            fetchTasks();
+        }
+
+        async function toggleComplete(id, completed) {
+            await fetch(`${SHEET_API_URL}?action=update`, {
+                method: "POST",
+                body: JSON.stringify({ id, completed: String(completed), completedBy: fullName }),
+                headers: { "Content-Type": "text/plain" }
+            });
+            fetchTasks();
+        }
+
+        async function deleteTask(id) {
+            if (!confirm("Delete this task?")) return;
+            await fetch(`${SHEET_API_URL}?action=delete`, {
+                method: "POST",
+                body: JSON.stringify({ id }),
+                headers: { "Content-Type": "text/plain" }
+            });
+            fetchTasks();
+        }
+
+        function populateAssigneeFilter() {
+            const filter = document.getElementById("filterAssignee");
+            if (!filter) return;
+            const current = filter.value;
+            const names = [...new Set(tasks.map(t => t.assignedTo))];
+            filter.innerHTML = '<option value="all">All Teams</option>';
+            names.forEach(n => filter.innerHTML += `<option value="${n}">${n}</option>`);
+            filter.value = current;
+        }
+
+        fetchTasks();
+        setInterval(fetchTasks, 30000);
+    </script>
+</body>
+</html>
