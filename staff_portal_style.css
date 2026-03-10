@@ -312,3 +312,7 @@ footer {
     background: #333;
     color: white;
 }
+/* --- Dynamic News Content Handling --- */
+#dynamic-news {
+    display: contents; /* Ensures the container itself doesn't create a grid item */
+}
