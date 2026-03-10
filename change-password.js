@@ -2,7 +2,7 @@ const API_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzURwLj_tTf7tZX7BI
 
 // Load username from session storage when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    const username = sessionStorage.getItem('username');
+    const username = sessionStorage.getItem('loggedInUser');
     if (!username) {
         alert('Please log in first');
         window.location.href = 'login.html';
