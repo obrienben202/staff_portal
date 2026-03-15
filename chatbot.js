@@ -39,6 +39,21 @@
                 "Click on <strong>🖥️ IT Helpdesk</strong>.",
                 "Complete the Monday.com support form with your issue details."
             ]
+        },
+        behaviour: {
+            title: "How to report pupil behaviour",
+            steps: [
+                "Locate the <strong>Quick Links</strong> sidebar on the right of the <a href='index.html'>Main Portal</a>.",
+                "Click on <strong>⚠️ Pupil Behaviour Report</strong>.",
+                "Fill in the Google Form with the details of the incident and submit."
+            ]
+        },
+        timetable: {
+            title: "How to view your schedule/timetable",
+            steps: [
+                "Go to the <a href='department-timetables.html'>My Schedule</a> page.",
+                "You can see your personal or department-wide timetables there."
+            ]
         }
     };
 
@@ -137,38 +152,45 @@
         const rePassword = /\bpassword(s)?\b/i;
         const reNews = /\bnews\b|\bpost\b/i;
         const reIT = /\bit\b|\bhelpdesk\b|\bsupport\b/i;
+        const reBehaviour = /\bbehaviour\b|\breport\b/i;
+        const reTimetable = /\btimetable\b|\bschedule\b/i;
 
-        if (reHoliday.test(q)) {
-            return formatInstruction(taskInstructions.holiday);
-        }
-        if (rePassword.test(q)) {
-            return formatInstruction(taskInstructions.password);
-        }
-        if (reNews.test(q)) {
-            return formatInstruction(taskInstructions.news);
-        }
-        if (reIT.test(q)) {
-            return formatInstruction(taskInstructions.it);
-        }
+        if (reHoliday.test(q)) return formatInstruction(taskInstructions.holiday);
+        if (rePassword.test(q)) return formatInstruction(taskInstructions.password);
+        if (reNews.test(q)) return formatInstruction(taskInstructions.news);
+        if (reIT.test(q)) return formatInstruction(taskInstructions.it);
 
-        // Match against links from links.json
+        // Specific check for behaviour to avoid matching "report" too broadly if possible
+        if (reBehaviour.test(q) && (q.includes('pupil') || q.includes('behaviour') || q.includes('report'))) {
+            return formatInstruction(taskInstructions.behaviour);
+        }
+        if (reTimetable.test(q)) return formatInstruction(taskInstructions.timetable);
+
+        // Match against links from links.json using tokenization for better relevance
+        const queryTokens = q.split(/\s+/).filter(t => t.length > 3); // ignore small words
+
         let matches = linksData.standardLinks.filter(l => {
             const name = l.name.toLowerCase();
-            // Match if query contains name OR name contains query keyword
-            return q.includes(name) || name.includes(q) || new RegExp(`\\b${name}(s)?\\b`, 'i').test(q);
+            if (q.includes(name)) return true;
+            // Check if all tokens of the link name (or at least major ones) are in the query
+            const nameTokens = name.split(/\s+/).filter(t => t.length > 3);
+            if (nameTokens.length > 0 && nameTokens.every(t => q.includes(t))) return true;
+            return false;
         });
 
         if (isPowerUser) {
             const adminMatches = linksData.adminLinks.filter(l => {
                 const name = l.name.toLowerCase();
-                return q.includes(name) || name.includes(q) || new RegExp(`\\b${name}(s)?\\b`, 'i').test(q);
+                if (q.includes(name)) return true;
+                const nameTokens = name.split(/\s+/).filter(t => t.length > 3);
+                if (nameTokens.length > 0 && nameTokens.every(t => q.includes(t))) return true;
+                return false;
             });
             matches = matches.concat(adminMatches);
         }
 
         if (matches.length > 0) {
             let res = "I found these relevant links that might help:<br><ul>";
-            // Remove duplicates if any (though unlikely given data structure)
             const seen = new Set();
             matches.forEach(m => {
                 if (!seen.has(m.url)) {
@@ -184,6 +206,6 @@
              return 'Your personal tasks are located here: <a href="todo.html">My Tasks</a>';
         }
 
-        return "I'm sorry, I couldn't find specific instructions for that. Try asking about 'holidays', 'passwords', 'IT support', or 'news'. I can also find links for you if you type a keyword like 'timetable' or 'payslip'.";
+        return "I'm sorry, I couldn't find specific instructions for that. Try asking about 'holidays', 'passwords', 'IT support', 'pupil behaviour', or 'timetables'.";
     }
 })();
