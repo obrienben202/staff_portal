@@ -4,6 +4,44 @@
     const fullName = sessionStorage.getItem('fullName') || 'Staff Member';
     const isPowerUser = ['Admin', 'HR', 'HoD'].includes(role);
 
+    const taskInstructions = {
+        holiday: {
+            title: "How to request a holiday or leave",
+            steps: [
+                "Navigate to the <a href='hr_app.html'>HR Portal</a>.",
+                "Click on <strong>📋 HR Forms</strong> in the navigation bar.",
+                "Select <strong>📅 Holiday Request Form</strong> or <strong>✉️ Staff Leave Request Form</strong>.",
+                "Fill out the Google Form and submit it."
+            ]
+        },
+        password: {
+            title: "How to change your password",
+            steps: [
+                "Go to the <a href='change-password.html'>Change Password</a> page.",
+                "Enter your current password.",
+                "Enter and confirm your new password.",
+                "Click <strong>Update Password</strong>."
+            ]
+        },
+        news: {
+            title: "How to post latest news",
+            steps: [
+                "On the <a href='index.html'>Main Portal</a>, locate the <strong>Latest News</strong> section.",
+                "Click the <strong>Post News</strong> button (available for Admin, HR, and HoD).",
+                "Fill in the Title, Content, and optional Image URL/Link.",
+                "Click <strong>Post News</strong> to publish."
+            ]
+        },
+        it: {
+            title: "How to get IT Support",
+            steps: [
+                "Locate the <strong>Quick Links</strong> sidebar on the right of the <a href='index.html'>Main Portal</a>.",
+                "Click on <strong>🖥️ IT Helpdesk</strong>.",
+                "Complete the Monday.com support form with your issue details."
+            ]
+        }
+    };
+
     // 1. Fetch Links
     fetch('links.json')
         .then(response => response.json())
@@ -41,7 +79,7 @@
         const isVisible = windowEl.style.display === 'flex';
         windowEl.style.display = isVisible ? 'none' : 'flex';
         if (!isVisible && messagesEl.children.length === 0) {
-            addBotMessage(`Hello ${fullName}! I'm here to help you find things on the portal. What are you looking for today?`);
+            addBotMessage(`Hello ${fullName}! I'm here to help you find things and guide you through tasks. What can I assist you with today?`);
         }
     };
 
@@ -68,7 +106,7 @@
     function addUserMessage(text) {
         const div = document.createElement('div');
         div.className = 'chat-message user-message';
-        div.textContent = text;
+        div.textContent = text; // Safe: treat user input as plain text
         messagesEl.appendChild(div);
         messagesEl.scrollTop = messagesEl.scrollHeight;
     }
@@ -76,54 +114,76 @@
     function addBotMessage(html) {
         const div = document.createElement('div');
         div.className = 'chat-message bot-message';
-        div.innerHTML = html;
+        div.innerHTML = html; // Trusted: Bot responses are built from internal taskInstructions or links.json
         messagesEl.appendChild(div);
         messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function formatInstruction(task) {
+        let html = `<strong>${task.title}</strong><ol style="margin-top: 5px; padding-left: 20px;">`;
+        task.steps.forEach(step => {
+            html += `<li>${step}</li>`;
+        });
+        html += `</ol>`;
+        return html;
     }
 
     // 4. Response Logic
     function generateResponse(query) {
         const q = query.toLowerCase();
 
-        // Match against standard links
-        let matches = linksData.standardLinks.filter(l =>
-            l.name.toLowerCase().includes(q) || q.includes(l.name.toLowerCase())
-        );
+        // Regex patterns for better matching (word boundaries, plurals)
+        const reHoliday = /\bholiday(s)?\b|\bleave\b|\babsence\b/i;
+        const rePassword = /\bpassword(s)?\b/i;
+        const reNews = /\bnews\b|\bpost\b/i;
+        const reIT = /\bit\b|\bhelpdesk\b|\bsupport\b/i;
 
-        // Match against admin links if power user
+        if (reHoliday.test(q)) {
+            return formatInstruction(taskInstructions.holiday);
+        }
+        if (rePassword.test(q)) {
+            return formatInstruction(taskInstructions.password);
+        }
+        if (reNews.test(q)) {
+            return formatInstruction(taskInstructions.news);
+        }
+        if (reIT.test(q)) {
+            return formatInstruction(taskInstructions.it);
+        }
+
+        // Match against links from links.json
+        let matches = linksData.standardLinks.filter(l => {
+            const name = l.name.toLowerCase();
+            // Match if query contains name OR name contains query keyword
+            return q.includes(name) || name.includes(q) || new RegExp(`\\b${name}(s)?\\b`, 'i').test(q);
+        });
+
         if (isPowerUser) {
-            const adminMatches = linksData.adminLinks.filter(l =>
-                l.name.toLowerCase().includes(q) || q.includes(l.name.toLowerCase())
-            );
+            const adminMatches = linksData.adminLinks.filter(l => {
+                const name = l.name.toLowerCase();
+                return q.includes(name) || name.includes(q) || new RegExp(`\\b${name}(s)?\\b`, 'i').test(q);
+            });
             matches = matches.concat(adminMatches);
         }
 
         if (matches.length > 0) {
-            let res = "I found these relevant links for you:<br><ul>";
+            let res = "I found these relevant links that might help:<br><ul>";
+            // Remove duplicates if any (though unlikely given data structure)
+            const seen = new Set();
             matches.forEach(m => {
-                res += `<li><a href="${m.url}" target="_blank">${m.icon} ${m.name}</a></li>`;
+                if (!seen.has(m.url)) {
+                    res += `<li><a href="${m.url}" target="_blank">${m.icon} ${m.name}</a></li>`;
+                    seen.add(m.url);
+                }
             });
             res += "</ul>";
             return res;
         }
 
-        // Generic keywords
-        if (q.includes('help') || q.includes('support')) {
-            return "You can reach out to the IT Support Team or check the IT Helpdesk link in the Quick Links section.";
+        if (/\btask(s)?\b|\btodo\b/i.test(q)) {
+             return 'Your personal tasks are located here: <a href="todo.html">My Tasks</a>';
         }
 
-        if (q.includes('password')) {
-            return 'You can change your password here: <a href="change-password.html">Change Password</a>';
-        }
-
-        if (q.includes('hr') || q.includes('holiday') || q.includes('leave')) {
-            return 'You can find HR forms and information in the <a href="hr_app.html">HR Portal</a>.';
-        }
-
-        if (q.includes('task') || q.includes('todo')) {
-             return 'Your tasks are located here: <a href="todo.html">My Tasks</a>';
-        }
-
-        return "I'm sorry, I couldn't find anything specific for that. Try searching for things like 'holiday', 'password', 'IT help', or 'tasks'.";
+        return "I'm sorry, I couldn't find specific instructions for that. Try asking about 'holidays', 'passwords', 'IT support', or 'news'. I can also find links for you if you type a keyword like 'timetable' or 'payslip'.";
     }
 })();
