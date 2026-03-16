@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Portal</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link href="staff_portal_style.css" rel="stylesheet" type="text/css">
+    <link href="exam_app_style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <header>
+        <p>Exam Support</p>
+        <h1 id="user-info">Welcome, ${fullName} to your Exam portal!</h1>
+        <button id="logout-btn" class="logout-button">Logout</button>
+    </header>
+
+    <div class="content-wrapper">
+        <nav class="navbar">
+            <a href="index.html">🏠 Main Portal</a>
+            <a href="#" onclick="toggleDropdown('examLinksDropdown'); return false;">📋 Exam Forms</a>
+            <a href="#" onclick="toggleDropdown('staffResDropdown'); return false;">📘 Resources</a>
+            <a href="#" id="admin-nav-link" onclick="toggleDropdown('examManagementDropdown'); return false;" style="display: none;">⚙️ Management</a>
+        </nav>
+
+        <div id="examLinksDropdown" class="dropdown-section" style="display: none;">
+            <div class="dropdown-grid">
+                <div class="grid-label">Key Documents</div>
+                <div class="card"><a href="https://docs.google.com/spreadsheets/d/1A1LHkDx0Aix2E6ioJpNcptbd0FbyMpGnGYcFXMNFbao/edit" target="_blank">📊 Exam Support List 2024</a></div>
+                <div class="card"><a href="mailto:exams@yourschool.com">✉️ Email Exam Support</a></div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/12BgsN6KgAxatCEeKykZqAPl1vEjLIdfC" target="_blank">📅 GCSE Exam Dates</a></div>
+            </div>
+        </div>
+
+        <div id="staffResDropdown" class="dropdown-section" style="display: none;">
+            <div class="dropdown-grid">
+                <div class="card"><a href="skills-and-strategies.html" target="_blank">🧠 Study Skills & Learning Resources</a></div>
+            </div>
+        </div>
+
+        <div id="examManagementDropdown" class="dropdown-section" style="display: none;">
+            <div class="dropdown-grid">
+                <div class="grid-label">Exam Administration</div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1kdE9WxRqnB-OCgJJkbvFtiM4Jkh5g0i_?usp=drive_link" target="_blank">📁 Exams Folder (Admin)</a></div>
+                <div class="card"><a href="https://docs.google.com/spreadsheets/d/1A1LHkDx0Aix2E6ioJpNcptbd0FbyMpGnGYcFXMNFbao/edit" target="_blank">📈 Response Data</a></div>
+            </div>
+        </div>
+
+        <div class="app-container">
+            <div class="instruction-text">
+                <strong>How to use this page:</strong> Use the tracker below to see assessment status. Fill out the <b>Access Arrangements</b> form for new requests, and ensure the <b>Document Template</b> is uploaded to the ANL folder once completed.
+            </div>
+
+            <div class="form-card" style="margin-bottom: 30px;">
+                <div class="form-header">📊 Exam Support List Tracker</div>
+                <div class="google-form-wrapper">
+                    <iframe src="https://docs.google.com/spreadsheets/d/1A1LHkDx0Aix2E6ioJpNcptbd0FbyMpGnGYcFXMNFbao/edit?usp=sharing" width="100%" height="450"></iframe>
+                </div>
+            </div>
+
+            <div class="exam-grid">
+                <div class="form-card">
+                    <div class="form-header">📝 Access Arrangements Form</div>
+                    <div class="google-form-wrapper">
+                        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScHDVK8TfF6jw6I4u4eacvaWtTGOIoe_LnBcfKImKkfe7jgzA/viewform?embedded=true" width="100%" height="600">Loading…</iframe>
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <div class="form-header">📄 Document Template</div>
+                    <div style="padding: 20px;">
+                        <p style="text-align: center;">Make a copy of the document below and upload the final version for ANL Staff review.</p>
+                        <div class="card" style="margin-bottom: 15px;">
+                            <a href="https://docs.google.com/document/d/148PAhPgxlHAEK8mxqog0kaDawRfxxoDJ-ahtaWc0ajw/edit?usp=sharing" target="_blank">📥 Open Document Template</a>
+                        </div>
+                        <iframe src="https://docs.google.com/document/d/148PAhPgxlHAEK8mxqog0kaDawRfxxoDJ-ahtaWc0ajw/edit?usp=sharing" width="100%" height="400"></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card" style="margin-top: 30px;">
+                <div class="form-header">🎥 Exam and Revision Help</div>
+                <div style="padding: 20px;">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/watch?v=5q0t07cQMvc" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Staff Portal. All rights reserved.</p>
+        <p>Developed by the IT Support Team</p>
+    </footer>
+
+    <script>
+        function toggleDropdown(id) {
+            const dropdowns = document.querySelectorAll('.dropdown-section');
+            dropdowns.forEach(section => {
+                if (section.id === id) {
+                    section.style.display = (section.style.display === 'block') ? 'none' : 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        }
+
+        // CHANGE 3: Updated Security/User logic to handle roles
+        (function(){
+            const rawRole = sessionStorage.getItem('userRole') || "";
+            const role = rawRole.toLowerCase().trim();
+            const fullName = sessionStorage.getItem('fullName') || 'Staff Member';
+            
+            // Define who can see the management gear
+            const authorizedRoles = ['admin', 'hr', 'hod']; 
+
+            const userInfoHeading = document.getElementById('user-info');
+            if (userInfoHeading) {
+                userInfoHeading.textContent = `Welcome, ${fullName} to your Exam portal!`;
+            }
+
+            // Reveal the Management link if authorized
+            const adminNavLink = document.getElementById('admin-nav-link');
+            if (adminNavLink && authorizedRoles.includes(role)) {
+                adminNavLink.style.display = 'inline-block';
+            }
+
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.onclick = function() {
+                    sessionStorage.clear();
+                    window.location.href = 'login.html';
+                };
+            }
+        })();
+    </script>
+</body>
+</html>
