@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALN Support Portal</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link href="staff_portal_style.css" rel="stylesheet" type="text/css">
+    <link href="exam_app_style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+     <header>
+        <p>ALN Support</p>
+        <h1 id="user-info">Welcome, ${fullName} to your ALN portal!</h1>
+        <button id="logout-btn" class="logout-button">Logout</button>
+    </header>
+
+    <div class="content-wrapper">
+        <nav class="navbar">
+            <a href="index.html">🏠 Main Portal</a>
+            <a href="#" onclick="toggleDropdown('alnFormsDropdown'); return false;">📋 ALN Forms</a>
+            <a href="#" onclick="toggleDropdown('alnSheetsDropdown'); return false;">📊 ALN Spreadsheets</a>
+            <a href="#" id="admin-nav-link" onclick="toggleDropdown('alnAdminDropdown'); return false;" style="display: none;">⚙️ Admin</a>
+        </nav>
+
+        <div id="alnFormsDropdown" class="dropdown-section" style="display: none;">
+            <div class="dropdown-grid">
+                <div class="grid-label">Data Entry Forms</div>
+                <div class="card"><a href="https://docs.google.com/forms/d/e/1FAIpQLSe0UhGuYusMLjtqr2gaeyu9CgUG36nm95WrWVBkuxxLO7dUtg/viewform?usp=dialog" target="_blank">📝 ALN Support Referral Form</a></div>
+                <div class="card"><a href="https://docs.google.com/forms/d/e/1FAIpQLSd63GmRpxxlzrxFVU6ZSNQpvEgTGyOvjqsgZyl1oT2NdiJXRQ/viewform?usp=dialog" target="_blank">📝 ALN Intervention Programme</a></div>
+            </div>
+        </div>
+
+        <div id="alnSheetsDropdown" class="dropdown-section" style="display: none;">
+            <div class="dropdown-grid">
+                <div class="grid-label">Live Trackers</div>
+                <div class="card"><a href="https://docs.google.com/spreadsheets/d/1HAEEIxJjIan8ZPhyMJ3s17Pqs0qD_w-TcS3ojRCrpD0/edit?usp=sharing" target="_blank">🟢 ALN Register</a></div>
+                <div class="card"><a href="https://docs.google.com/spreadsheets/d/10vgI6v8n0fXMw9awk0N4cgrfd_8-_2WiOG0Th-KrWO8/edit?usp=sharing" target="_blank">📊 ALN Support Referral Spreadsheet</a></div>
+                <div class="card"><a href="https://docs.google.com/spreadsheets/d/1XWyB0QRgYq-cgMWb5GUWqdX5LYjh6_W0JeY1Bg98y_I/edit?usp=sharing" target="_blank">📊 ALN Intervention Programme Spreadsheet</a></div>
+            </div>
+        </div>
+
+        <div id="alnAdminDropdown" class="dropdown-section" style="display: none;">
+            <div class="dropdown-grid">
+                <div class="grid-label">ALN Administration</div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1GxiJ6H9uRzG9VTlBfz841o22xbcxw_yN?usp=sharing" target="_blank">📁 ALN Folder (Admin)</a></div>
+                <div class="card"><a href="*" target="_blank">📈 Response Data</a></div>
+            </div>
+        </div>
+
+        <div class="app-container">
+            <div class="form-card" style="margin-bottom: 30px;">
+                <div class="form-header">ALN Register</div>
+                <strong>ALN Portal Instructions:</strong> Use the <b>ALN Register</b> below to check student status. Use the <b>Referral Form</b> for new support requests and the <b>Intervention Submission</b> to log programme data.
+                <div class="google-form-wrapper">
+                    <iframe src="https://docs.google.com/spreadsheets/d/1HAEEIxJjIan8ZPhyMJ3s17Pqs0qD_w-TcS3ojRCrpD0/preview" width="100%" height="500"></iframe>
+                </div>
+            </div>
+
+            <div class="exam-grid">
+                <div class="form-card">
+                    <div class="form-header">ALN Support Referral Form</div>
+                    <div class="google-form-wrapper">
+                        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSe0UhGuYusMLjtqr2gaeyu9CgUG36nm95WrWVBkuxxLO7dUtg/viewform?usp=dialogembedded=true" width="100%" height="600">Loading…</iframe>
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <div class="form-header">ALN Intervention Programme</div>
+                    <div class="google-form-wrapper">
+                        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSd63GmRpxxlzrxFVU6ZSNQpvEgTGyOvjqsgZyl1oT2NdiJXRQ/viewform?embedded=true" width="100%" height="600">Loading…</iframe>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card" style="margin-top: 30px;">
+                <div class="form-header">Response Data View</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px;">
+                    <div>
+                        <p><strong>ALN Support Referral Spreadsheet</strong></p>
+                        <iframe src="https://docs.google.com/spreadsheets/d/10vgI6v8n0fXMw9awk0N4cgrfd_8-_2WiOG0Th-KrWO8/preview" width="100%" height="350"></iframe>
+                    </div>
+                    <div>
+                        <p><strong>ALN Intervention Programme Spreadsheet</strong></p>
+                        <iframe src="https://docs.google.com/spreadsheets/d/1XWyB0QRgYq-cgMWb5GUWqdX5LYjh6_W0JeY1Bg98y_I/preview" width="100%" height="350"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 ALN Support Team</p>
+    </footer>
+
+    <script>
+        function toggleDropdown(id) {
+            const dropdowns = document.querySelectorAll('.dropdown-section');
+            dropdowns.forEach(section => {
+                section.style.display = (section.id === id && section.style.display !== 'block') ? 'block' : 'none';
+            });
+        }
+
+        (function(){
+            const fullName = sessionStorage.getItem('fullName') || 'Staff Member';
+            const role = (sessionStorage.getItem('userRole') || "").toLowerCase();
+            document.getElementById('user-info').textContent = `Welcome, ${fullName} to the ALN Portal`;
+
+            if (['admin', 'alnco', 'hod'].includes(role)) {
+                const adminNav = document.getElementById('admin-nav-link');
+                if(adminNav) adminNav.style.display = 'inline-block';
+            }
+
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.onclick = () => {
+                    sessionStorage.clear();
+                    window.location.href = 'login.html';
+                };
+            }
+        })();
+    </script>
+</body>
+</html>
