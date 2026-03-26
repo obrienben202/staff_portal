@@ -21,6 +21,7 @@
             <a href="index.html">🏠 Main Portal</a>
             <a href="#" onclick="toggleDropdown('alnFormsDropdown'); return false;">📋 ALN Forms</a>
             <a href="#" onclick="toggleDropdown('alnSheetsDropdown'); return false;">📊 ALN Spreadsheets</a>
+            <a href="#" onclick="toggleDropdown('alnResourcesDropdown'); return false;">📘 Staff Resources</a>
             <a href="#" id="admin-nav-link" onclick="toggleDropdown('alnAdminDropdown'); return false;" style="display: none;">⚙️ Admin</a>
         </nav>
 
@@ -41,21 +42,44 @@
             </div>
         </div>
 
+        <div id="alnResourcesDropdown" class="dropdown-section" style="display: none;">
+    <div class="dropdown-grid">
+        <div class="grid-label">Learning & Support Strategies</div>
+        <div class="card"><a href="https://drive.google.com/file/d/1RjV_YG7tyIQWatkmqYzffAEUjwtMBjdG/view" target="_blank">🧠 High-Frequency ALN Strategies</a></div>
+        <div class="card"><a href="https://drive.google.com/file/d/1EXdrP7LfvR3LY-zCAtLGloPO3QcETWV_/view?usp=sharing" target="_blank">📖 Differentiation Guide</a></div>
+        <div class="card"><a href="https://www.google.com/search?q=ALN+support+strategies" target="_blank">🔍 Literacy & Numeracy Support</a></div>
+
+        <div class="grid-label">Legal & Frameworks</div>
+        <div class="card"><a href="https://www.gov.wales/additional-learning-needs-transformation-programme-guide" target="_blank">📜 The ALN Code of Practice</a></div>
+        <div class="card"><a href="https://drive.google.com/file/d/1Ju4TMYbw9ZH7Ewv4JOCUyvDJmu9aDv4k/view?usp=sharing" target="_blank">📋 IDP vs Statement Guide</a></div>
+
+        <div class="grid-label">Professional Development</div>
+        <div class="card"><a href="https://www.youtube.com/watch?v=GPzHCl988ns&list=UUhE7WUE5FCk0ozxl3JkjHHw" target="_blank">🎥 Inclusion Training Videos</a></div>
+        <div class="card"><a href="mailto:aln-elfedhs@googlegroups.com?subject=Requesting%20ALN%20Training">📅 Request Staff Training</a></div>
+    </div>
+</div>
+
         <div id="alnAdminDropdown" class="dropdown-section" style="display: none;">
             <div class="dropdown-grid">
-                <div class="grid-label">ALN Administration</div>
-                <div class="card"><a href="https://drive.google.com/drive/folders/1GxiJ6H9uRzG9VTlBfz841o22xbcxw_yN?usp=sharing" target="_blank">📁 ALN Folder (Admin)</a></div>
-                <div class="card"><a href="*" target="_blank">📈 Response Data</a></div>
+                <div class="grid-label">Master Administration</div>
+                <div class="card"><a href="https://drive.google.com/drive/folders/1GxiJ6H9uRzG9VTlBfz841o22xbcxw_yN?usp=sharing" target="_blank">📁 ALN Master Drive Folder</a></div>
+        
+                <div class="card"><a href="https://docs.google.com/spreadsheets/d/1HAEEIxJjIan8ZPhyMJ3s17Pqs0qD_w-TcS3ojRCrpD0/edit?usp=sharing" target="_blank">🟢 Edit ALN Register</a></div>
+
+                <div class="grid-label">Data Management</div>
+                <div class="card"><a href="https://docs.google.com/spreadsheets/d/10vgI6v8n0fXMw9awk0N4cgrfd_8-_2WiOG0Th-KrWO8/edit?usp=sharing" target="_blank">📊 Referral Response Data (Full Access)</a></div>
+        
+                <div class="card"><a href="https://docs.google.com/spreadsheets/d/1XWyB0QRgYq-cgMWb5GUWqdX5LYjh6_W0JeY1Bg98y_I/edit?usp=sharing" target="_blank">📊 Intervention Response Data (Full Access)</a></div>
+
+                <div class="grid-label">Communication</div>
+                <div class="card"><a href="mailto:aln-elfedhs@googlegroups.com">✉️ Email ALN Department</a></div>
             </div>
         </div>
-        <div class="app-container">
-              <div class="instruction-text">
-                    <strong>ALN Portal Instructions:</strong> Use the <b>ALN Register</b> below to check student status. Use the <b>Referral Form</b> for new support requests and the <b>Intervention Submission</b> to log programme data.
-                </div>        
-          </div>
+
         <div class="app-container">
             <div class="form-card" style="margin-bottom: 30px;">
                 <div class="form-header">ALN Register</div>
+                <strong>ALN Portal Instructions:</strong> Use the <b>ALN Register</b> below to check student status. Use the <b>Referral Form</b> for new support requests and the <b>Intervention Submission</b> to log programme data.
                 <div class="google-form-wrapper">
                     <iframe src="https://docs.google.com/spreadsheets/d/1HAEEIxJjIan8ZPhyMJ3s17Pqs0qD_w-TcS3ojRCrpD0/preview" width="100%" height="500"></iframe>
                 </div>
@@ -65,7 +89,7 @@
                 <div class="form-card">
                     <div class="form-header">ALN Support Referral Form</div>
                     <div class="google-form-wrapper">
-                        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSe0UhGuYusMLjtqr2gaeyu9CgUG36nm95WrWVBkuxxLO7dUtg/viewform?embedded=true" width="100%" height="600">Loading…</iframe>
+                        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSe0UhGuYusMLjtqr2gaeyu9CgUG36nm95WrWVBkuxxLO7dUtg/viewform?usp=dialogembedded=true" width="100%" height="600">Loading…</iframe>
                     </div>
                 </div>
 
@@ -97,27 +121,41 @@
         <p>© 2026 ALN Support Team</p>
     </footer>
 
-    <script>
+   <script>
         function toggleDropdown(id) {
             const dropdowns = document.querySelectorAll('.dropdown-section');
             dropdowns.forEach(section => {
-                section.style.display = (section.id === id && section.style.display !== 'block') ? 'block' : 'none';
+                if (section.id === id) {
+                    section.style.display = (section.style.display === 'block') ? 'none' : 'block';
+                } else {
+                    section.style.display = 'none';
+                }
             });
         }
 
+        // CHANGE 3: Updated Security/User logic to handle roles
         (function(){
+            const rawRole = sessionStorage.getItem('userRole') || "";
+            const role = rawRole.toLowerCase().trim();
             const fullName = sessionStorage.getItem('fullName') || 'Staff Member';
-            const role = (sessionStorage.getItem('userRole') || "").toLowerCase();
-            document.getElementById('user-info').textContent = `Welcome, ${fullName} to the ALN Portal`;
+            
+            // Define who can see the management gear
+            const authorizedRoles = ['admin', 'hr', 'hod']; 
 
-            if (['admin', 'alnco', 'hod'].includes(role)) {
-                const adminNav = document.getElementById('admin-nav-link');
-                if(adminNav) adminNav.style.display = 'inline-block';
+            const userInfoHeading = document.getElementById('user-info');
+            if (userInfoHeading) {
+                userInfoHeading.textContent = `Welcome, ${fullName} to your ALN portal!`;
+            }
+
+            // Reveal the Management link if authorized
+            const adminNavLink = document.getElementById('admin-nav-link');
+            if (adminNavLink && authorizedRoles.includes(role)) {
+                adminNavLink.style.display = 'inline-block';
             }
 
             const logoutBtn = document.getElementById('logout-btn');
             if (logoutBtn) {
-                logoutBtn.onclick = () => {
+                logoutBtn.onclick = function() {
                     sessionStorage.clear();
                     window.location.href = 'login.html';
                 };
