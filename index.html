@@ -14,7 +14,7 @@
 <body>
     <header>
         <p>Staff Portal</p>
-        <h1 id="user-info">Welcome, ${fullName} to your staff portal!</h1>
+        <h1 id="user-info">Welcome to your staff portal!</h1>
         <button id="logout-btn" class="logout-button">Logout</button>
     </header>
 
@@ -26,7 +26,7 @@
             <a href="#" onclick="toggleDropdown('rgDropdown'); return false;">📖 Form Group</a>
             <a href="#" onclick="toggleDropdown('learningSupportDropdown'); return false;">🧩 Learner Support</a>
             <a href="#" onclick="toggleDropdown('supportDropdown'); return false;">💬 Support & Feedback</a>
-            <a href="#" id="admin-nav-link" onclick="toggleDropdown('adminDropdown'); return false;">⚙️ Admin</a> </nav>
+            <a href="#" id="admin-nav-link" onclick="toggleDropdown('adminDropdown'); return false;" style="display: none;">⚙️ Admin</a> </nav>
 
         <div id="adminDropdown" class="dropdown-section" style="display: none;">
             <div class="dropdown-grid">
@@ -124,6 +124,7 @@
                 </div>
 
                 <div class="news-grid">
+                    <div id="dynamic-news" style="display: contents;"></div>
 					<div class="news-card">
                         <img src="last_news/images/ilp_support.jpg" alt="ILP Teacher Comments Update">
                         <h3>Term 3 ILP Teacher Comments</h3>
@@ -140,7 +141,6 @@
                         <a href="last_news/portal_features_update.html" class="read-more">Read More</a>
                     </div>
 
-                    <div id="dynamic-news" style="display: contents;"></div>
 					<div class="news-card">
                         <img src="last_news/images/training.png" alt="New Training Materials">
                         <h3>Staff Training Access 2025–2026 Training & Report Issues</h3>
@@ -232,260 +232,6 @@
         </div>
     </div>
     <script src="js/main.js"></script>
-    
-    <script>
-        // Toggle Dropdown function
-        function toggleDropdown(id) {
-            const dropdowns = document.querySelectorAll('.dropdown-section');
-            dropdowns.forEach(section => {
-                if (section.id === id) {
-                    section.style.display = (section.style.display === 'block') ? 'none' : 'block';
-                } else {
-                    section.style.display = 'none';
-                }
-            });
-        }
-    </script>
-
-    <script>
-        (function(){
-            const role = sessionStorage.getItem('userRole');
-            const fullName = sessionStorage.getItem('fullName') || 'Unknown User';
-            const authorizedRoles = ['admin', 'HR', 'HoD']; // Define allowed roles for admin features
-
-            // --------------------------------------------------------
-            // 1. ADMIN NAVIGATION LINK VISIBILITY
-            // --------------------------------------------------------
-            const adminNavLink = document.getElementById('admin-nav-link');
-            // If the role is NOT one of the authorized roles, hide the navigation link
-            if (adminNavLink && !authorizedRoles.includes(role)) {
-                adminNavLink.style.display = 'none';
-            }
-
-
-            // --------------------------------------------------------
-            // 2. POST NEWS BUTTON VISIBILITY (Updated Logic)
-            // The existing logic already makes it visible for 'staff', 'admin', 'HR'.
-            // To restrict it to just Admin/HR/HoD, we update the check.
-            // --------------------------------------------------------
-            const postArea = document.getElementById('post-news-area');
-            if (postArea) {
-                // Only show if the user is in the authorized roles list
-                if (authorizedRoles.includes(role)) {
-                    postArea.style.display = 'block';
-                } else {
-                    postArea.style.display = 'none'; // Explicitly hide for everyone else
-                }
-            }
-
-
-            // The existing adminDropdown logic in this block seems incomplete/mis-ID'd, so focusing on the features below.
-            // The first script block already handles the `adminDropdown` link visibility using the `admin-nav-link` ID.
-
-            // --------------------------------------------------------
-            // 3. ADMIN / PORTAL MANAGEMENT FEATURES
-            // --------------------------------------------------------
-
-            // Storage keys
-            const NEWS_KEY = 'staffPortal_latestNews';
-            const PORTAL_KEY = 'staffPortal_customPortalItems';
-
-            // Utility: load and save JSON safe
-            function loadJSON(key){
-                try{
-                    const raw = localStorage.getItem(key);
-                    return raw ? JSON.parse(raw) : [];
-                }catch(e){
-                    console.error('Failed to load', key, e);
-                    return [];
-                }
-            }
-            function saveJSON(key, val){
-                try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){ console.error('Failed to save', key, e); }
-            }
-
-            // CRITICAL UPDATE for Dynamic News to use the new card style
-            function renderNews(){
-                const container = document.getElementById('dynamic-news');
-                if (!container) return;
-                const items = loadJSON(NEWS_KEY);
-                container.innerHTML = '';
-                items.slice().reverse().forEach((item, idx) => {
-                    const div = document.createElement('div');
-                    // Use the new CSS class for the compact card format
-                    div.className = 'news-card';
-                    div.innerHTML = `
-                        ${item.image ? `<img src="${item.image}" alt="${escapeHtml(item.title)}">` : ''}
-                        <h3>${escapeHtml(item.title)}</h3>
-                        <p style="font-size:0.8em; margin-bottom:5px;"><em>Published: ${escapeHtml(item.date)}</em></p>
-                        <p>${escapeHtml(item.content)}</p>
-                        ${item.url ? `<a href="${escapeHtml(item.url)}" class="read-more">Read More</a>` : ''}
-                        ${ authorizedRoles.includes(role) ? `<div style="margin-top:.5rem;"><button data-idx="${idx}" class="remove-news">Remove</button></div>` : '' } `;
-                    container.appendChild(div);
-                });
-
-                // Attach remove handlers for authorized roles
-                if (authorizedRoles.includes(role)){
-                    container.querySelectorAll('.remove-news').forEach(btn => {
-                        btn.addEventListener('click', function(){
-                            const i = parseInt(this.dataset.idx,10);
-                            const items = loadJSON(NEWS_KEY);
-                            // items rendered reversed earlier; remove corresponding
-                            const targetIndex = items.length - 1 - i;
-                            if (targetIndex >=0){ items.splice(targetIndex,1); saveJSON(NEWS_KEY, items); renderNews(); }
-                        });
-                    });
-                }
-            }
-
-            // Escaping helper to avoid naive injection
-            function escapeHtml(str){
-                if (!str) return '';
-                return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[s]));
-            }
-
-            // Post news form handler (kept intact)
-            const form = document.getElementById('post-news-form');
-            if (form){
-                form.addEventListener('submit', function(e){
-                    e.preventDefault();
-                    const title = document.getElementById('news-title').value.trim();
-                    const content = document.getElementById('news-content-input').value.trim();
-                    const url = document.getElementById('news-url').value.trim();
-                    const image = document.getElementById('news-image').value.trim();
-                    if (!title || !content){ alert('Please provide title and content.'); return; }
-                    const items = loadJSON(NEWS_KEY);
-                    items.push({ title, content, url, image, author: fullName, date: new Date().toLocaleDateString() });
-                    saveJSON(NEWS_KEY, items);
-                    form.reset();
-                    renderNews();
-                    alert('News posted.');
-                });
-                document.getElementById('cancel-post').addEventListener('click', ()=>form.reset());
-            }
-
-            // Initial render
-            renderNews();
-
-            // OPTIONAL: Admin portal manager modal (kept intact, added authorizedRoles check)
-            if (authorizedRoles.includes(role)){ // Check for ALL authorized roles
-                // Create small floating manager button
-                const mgr = document.createElement('div');
-                mgr.style.position = 'fixed'; mgr.style.right = '12px'; mgr.style.bottom = '12px'; mgr.style.zIndex = 2000;
-                mgr.innerHTML = `<button id="open-portal-mgr">Manage Portal Items</button>`;
-                document.body.appendChild(mgr);
-
-                // Create modal
-                const modal = document.createElement('div');
-                modal.id = 'portal-mgr-modal';
-                modal.style.position = 'fixed'; modal.style.left = 0; modal.style.top = 0; modal.style.right =0; modal.style.bottom =0;
-                modal.style.display = 'none'; modal.style.background = 'rgba(0,0,0,0.4)'; modal.style.padding='40px';
-                modal.innerHTML = `
-                    <div style="background:#fff;padding:20px;max-width:720px;margin:0 auto;border-radius:6px;">
-                        <h3>Portal Manager</h3>
-                        <form id="portal-item-form">
-                            <input id="portal-title" placeholder="Item text (e.g. My Tasks)" style="width:100%;margin-bottom:.5rem;" required />
-                            <input id="portal-url" placeholder="URL (relative or absolute)" style="width:100%;margin-bottom:.5rem;" required />
-                            <input id="portal-section" placeholder="Section id (e.g. myWorkDropdown) - optional" style="width:100%;margin-bottom:.5rem;" />
-                            <div style="display:flex;gap:.5rem;"><button type="submit">Add Item</button><button type="button" id="close-portal-mgr">Close</button></div>
-                        </form>
-                        <h4>Existing Custom Items</h4>
-                        <div id="portal-items-list"></div>
-                    </div>`;
-                document.body.appendChild(modal);
-
-                document.getElementById('open-portal-mgr').addEventListener('click', ()=>{ modal.style.display='block'; renderPortalItems(); });
-                document.getElementById('close-portal-mgr').addEventListener('click', ()=>{ modal.style.display='none'; });
-
-                const pform = document.getElementById('portal-item-form');
-                pform.addEventListener('submit', function(e){
-                    e.preventDefault();
-                    const title = document.getElementById('portal-title').value.trim();
-                    const url = document.getElementById('portal-url').value.trim();
-                    const section = document.getElementById('portal-section').value.trim();
-                    if (!title || !url){ alert('Provide title and URL'); return; }
-                    const items = loadJSON(PORTAL_KEY);
-                    items.push({ title, url, section });
-                    saveJSON(PORTAL_KEY, items);
-                    document.getElementById('portal-title').value = '';
-                    document.getElementById('portal-url').value = '';
-                    document.getElementById('portal-section').value = '';
-                    renderPortalItems();
-                    insertPortalItemToDom({ title, url, section });
-                });
-
-                function renderPortalItems(){
-                    const list = document.getElementById('portal-items-list');
-                    const items = loadJSON(PORTAL_KEY);
-                    list.innerHTML = '';
-                    items.forEach((it,i)=>{
-                        const el = document.createElement('div');
-                        el.style.display='flex'; el.style.justifyContent='space-between'; el.style.alignItems='center'; el.style.padding='.25rem 0';
-                        el.innerHTML = `<div>${escapeHtml(it.title)} — <small>${escapeHtml(it.url)}</small> ${it.section?`<em>(${escapeHtml(it.section)})</em>`:''}</div><div><button data-i="${i}" class="remove-portal">Remove</button></div>`;
-                        list.appendChild(el);
-                    });
-                    list.querySelectorAll('.remove-portal').forEach(btn=>btn.addEventListener('click', function(){
-                        const i = parseInt(this.dataset.i,10); const items = loadJSON(PORTAL_KEY); items.splice(i,1); saveJSON(PORTAL_KEY, items); renderPortalItems(); // TODO: also remove from DOM if inserted
-                    }));
-                }
-
-                function insertPortalItemToDom(item){
-                    // If a section id was provided and exists, insert as a card link
-                    if (!item.section) return;
-                    const section = document.getElementById(item.section);
-                    if (!section) return; // nothing to attach to
-                    const card = document.createElement('div'); card.className='card';
-                    const a = document.createElement('a'); a.href = item.url; a.textContent = item.title; card.appendChild(a);
-                    // Append to first child grid if present
-                    const grid = section.querySelector('.dropdown-grid');
-                    if (grid) grid.appendChild(card);
-                }
-
-                // On load, insert any existing portal items into DOM
-                loadJSON(PORTAL_KEY).forEach(insertPortalItemToDom);
-            }
-        })();
-    </script>
-    <script>
-    async function updatePortalLinks() {
-        try {
-            const response = await fetch('links.json');
-            if (!response.ok) throw new Error('links.json not found');
-            const data = await response.json();
-            const container = document.getElementById('dynamic-links');
-
-            // 1. Get the role (checking window variable or login storage)
-            const currentRole = window.userRole || localStorage.getItem('userRole') || 'Staff';
-            const powerUsers = ['Admin', 'HR', 'HoD'];
-            const isPowerUser = powerUsers.includes(currentRole);
-
-            let listHtml = '';
-
-            // 2. Build the Standard list (Everyone gets these)
-            data.standardLinks.forEach(link => {
-                listHtml += `<li><a href="${link.url}"><span class="icon">${link.icon}</span> ${link.name}</a></li>`;
-            });
-
-            // 3. Add Elevated links ONLY for Admin, HR, and HoD
-            if (isPowerUser) {
-                // Add a small divider to keep it organized
-                listHtml += `<li style="font-size: 11px; color: #f39c12; margin-top: 15px; border-bottom: 1px solid #eee; font-weight: bold;">ADMIN & LEADERSHIP</li>`;
-                
-                data.adminLinks.forEach(link => {
-                    listHtml += `<li class="admin-link"><a href="${link.url}" target="_blank"><span class="icon">${link.icon}</span> ${link.name}</a></li>`;
-                });
-            }
-
-            container.innerHTML = listHtml;
-        } catch (error) {
-            console.error("Quick Links error:", error);
-        }
-    }
-
-    // This ensures it runs after the login script has identified the user
-    window.addEventListener('load', updatePortalLinks);
-</script>
-
     <footer>
         <p>© 2025 Staff Portal. All rights reserved.</p>
         <p>Developed by the IT Support Team</p>
