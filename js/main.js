@@ -50,7 +50,7 @@
           ${item.image ? `<img src="${item.image}" alt="${escapeHtml(item.title)}">` : ''}
           <h3>${escapeHtml(item.title)}</h3>
           <p style="font-size:0.8em; margin-bottom:5px;"><em>Published: ${escapeHtml(item.date)}</em></p>
-          <p>${escapeHtml(item.content)}</p>
+          <p class="news-summary">${escapeHtml(item.content)}</p>
           ${item.url ? `<a href="${escapeHtml(item.url)}" class="read-more">Read More</a>` : ''}
           ${ isAuthorized ? `<div style="margin-top:.5rem;"><button data-idx="${idx}" class="remove-news" style="background:#e74c3c; color:white; border:none; border-radius:3px; padding:4px 8px; cursor:pointer; font-size:0.8em;">Remove</button></div>` : '' }
       `;

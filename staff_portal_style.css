@@ -316,3 +316,13 @@ footer {
 #dynamic-news {
     display: contents; /* Ensures the container itself doesn't create a grid item */
 }
+
+/* --- News Content Truncation --- */
+.news-summary {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limits to 3 lines of text */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 10px;
+}
