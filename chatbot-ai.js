@@ -2,7 +2,7 @@
 
   // ─── Config ───────────────────────────────────────────────────────────────
   // Replace this with your Cloudflare Worker URL after you deploy it
-  const PROXY_URL = 'https://YOUR-WORKER-NAME.YOUR-USERNAME.workers.dev';
+  const PROXY_URL = 'https://staff-portal-proxy.ben-obrien20.workers.dev';
   const MODEL     = 'claude-sonnet-4-20250514';
 
   // ─── Session state ────────────────────────────────────────────────────────
