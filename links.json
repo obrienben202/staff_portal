@@ -3,7 +3,7 @@
     { "name": "My Tasks", "url": "todo.html", "icon": "📝" },
     { "name": "My Schedule", "url": "department-timetables.html", "icon": "📅" },
     { "name": "IT Helpdesk", "url": "https://forms.monday.com/forms/6cea2a8aff9d0257a6f8f4e6bdf9eca6?r=euc1", "icon": "🖥️" },
-    { "name": "Policies & Procedures", "url": "https://drive.google.com/...", "icon": "📄" },
+    { "name": "Policies & Procedures", "url": "https://drive.google.com/drive/folders/1CQj5-UzrrPEYp3NdMyQ_07GlOfoXFP0T?usp=sharing", "icon": "📄" },
     { "name": "Pupil Behaviour Report", "url": "https://docs.google.com/forms/d/e/1FAIpQLSeIRBXbOovuBfvUFNtvbkb81jODB8sZ-Sgd3SnWXG00lM1WwQ/viewform?usp=sf_link", "icon": "⚠️" },
     { "name": "HR App", "url": "hr_app.html", "icon": "🧾" },
     { "name": "Change Password", "url": "change-password.html", "icon": "🔐" }
