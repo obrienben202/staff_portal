@@ -34,10 +34,10 @@
 				<div class="grid-label"> IT</div>
                 <div class="card"><a href="https://drive.google.com/drive/folders/1in9hWQGuYs-BWCtCdzkgAnwUK8DgUVKy?usp=drive_link" target="_blank">📁 IT Shared Drive</a></div>
 				<div class="card"><a href="https://docs.google.com/forms/d/e/1FAIpQLScqenQ8vdoJWySdXLi1oAC99OQXPVvHh7WEKRpklQsaVqJ_kA/viewform?usp=publish-editor" target="_blank">➕ Add User or Remove Users</a></div>
-				<div class="card"><a href="https://auth.monday.com/auth/login_monday" target="_blank">📊 IT Dashborad</a></div>
+				<div class="card"><a href="https://auth.monday.com/auth/login_monday" target="_blank">📊 IT Dashboard</a></div>
 				<div class="grid-label"> HR</div>
                 <div class="card"><a href="https://drive.google.com/drive/folders/1-nBowxk60GQ1l7mQsEXSOMj44aUI8nQT?usp=drive_link" target="_blank">📁 HR Shared Drive</a></div>
-				<div class="card"><a href="https://auth.monday.com/auth/login_monday" target="_blank">📊 HR Dashborad</a></div>
+				<div class="card"><a href="https://auth.monday.com/auth/login_monday" target="_blank">📊 HR Dashboard</a></div>
             </div>
         </div>
 
@@ -52,7 +52,7 @@
                 <div class="card"><a href="https://www.google.com/calendar" target="_blank">📆 Calendar</a></div>
                 <div class="card"><a href="https://classroom.google.com" target="_blank">📚 Google Classroom</a></div>
                 <div class="card"><a href="https://drive.google.com" target="_blank">📁 Drive</a></div>
-				<div class="card"><a href="https://obrienben202.github.io/student_portal/login.html" target="_black">Student Portal</a></div>
+				<div class="card"><a href="https://obrienben202.github.io/student_portal/login.html" target="_blank">Student Portal</a></div>
 				<div class="card"><a href="change-password.html">🔐 Change Password</a></div>
             </div>
         </div>
@@ -368,7 +368,8 @@
             renderNews();
 
             // OPTIONAL: Admin portal manager modal (kept intact, added authorizedRoles check)
-            if (authorizedRoles.includes(role)){ // Check for ALL authorized roles
+            if (authorizedRoles.includes(role) && !window.staffPortalManagerInitialized){ // Check for ALL authorized roles
+                window.staffPortalManagerInitialized = true;
                 // Create small floating manager button
                 const mgr = document.createElement('div');
                 mgr.style.position = 'fixed'; mgr.style.right = '12px'; mgr.style.bottom = '12px'; mgr.style.zIndex = 2000;
@@ -455,15 +456,16 @@
             const container = document.getElementById('dynamic-links');
 
             // 1. Get the role (checking window variable or login storage)
-            const currentRole = window.userRole || localStorage.getItem('userRole') || 'Staff';
-            const powerUsers = ['Admin', 'HR', 'HoD'];
+            const currentRole = sessionStorage.getItem('userRole') || 'staff';
+            const powerUsers = ['admin', 'HR', 'HoD'];
             const isPowerUser = powerUsers.includes(currentRole);
 
             let listHtml = '';
 
             // 2. Build the Standard list (Everyone gets these)
             data.standardLinks.forEach(link => {
-                listHtml += `<li><a href="${link.url}"><span class="icon">${link.icon}</span> ${link.name}</a></li>`;
+                const target = link.url.startsWith('http') ? ' target="_blank" rel="noopener noreferrer"' : '';
+                listHtml += `<li><a href="${link.url}"${target}><span class="icon">${link.icon}</span> ${link.name}</a></li>`;
             });
 
             // 3. Add Elevated links ONLY for Admin, HR, and HoD
@@ -472,7 +474,8 @@
                 listHtml += `<li style="font-size: 11px; color: #f39c12; margin-top: 15px; border-bottom: 1px solid #eee; font-weight: bold;">ADMIN & LEADERSHIP</li>`;
                 
                 data.adminLinks.forEach(link => {
-                    listHtml += `<li class="admin-link"><a href="${link.url}" target="_blank"><span class="icon">${link.icon}</span> ${link.name}</a></li>`;
+                    const target = link.url.startsWith('http') ? ' target="_blank" rel="noopener noreferrer"' : '';
+                    listHtml += `<li class="admin-link"><a href="${link.url}"${target}><span class="icon">${link.icon}</span> ${link.name}</a></li>`;
                 });
             }
 

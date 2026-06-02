@@ -20,10 +20,12 @@
   if ($('logout-btn')) $('logout-btn').addEventListener('click', logout);
 
   // Role-based UI
+  const authorizedRoles = ['admin', 'HR', 'HoD'];
+  const isAuthorized = authorizedRoles.includes(role);
   const postArea = $('post-news-area');
-  if (postArea && (role === 'staff' || role === 'admin' || role === 'HoD' || role === 'HR')) postArea.style.display = 'block';
-  const adminDropdown = $('admin-dropdown');
-  if (adminDropdown && (role === 'admin' || role === 'HoD' || role === 'HR')) adminDropdown.style.display = 'inline-block';
+  if (postArea) postArea.style.display = isAuthorized ? 'block' : 'none';
+  const adminNavLink = $('admin-nav-link');
+  if (adminNavLink) adminNavLink.style.display = isAuthorized ? 'block' : 'none';
 
   // Storage keys
   const NEWS_KEY = 'staffPortal_latestNews';
@@ -40,11 +42,12 @@
     container.innerHTML = '';
     items.slice().reverse().forEach((item, idx) => {
       const div = document.createElement('div'); div.className = 'news-item';
-      div.innerHTML = `\n          ${item.image ? `<img src="${item.image}" alt="${escapeHtml(item.title)}">` : ''}\n          <div class="news-content">\n            <h3>${escapeHtml(item.title)}</h3>\n            <p><em>Published By: ${escapeHtml(item.author)}</em></p>\n            <p><em>Published: ${escapeHtml(item.date)}</em></p>\n            <p>${escapeHtml(item.content)}</p>\n            ${item.url ? `<a href="${escapeHtml(item.url)}">Read more →</a>` : ''}\n            ${ (role === 'admin' || role === 'HR') ? `<div style="margin-top:.5rem;"><button data-idx="${idx}" class="remove-news">Remove</button></div>` : '' }\n          </div>`;
+      div.className = 'news-card';
+      div.innerHTML = `\n          ${item.image ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}">` : ''}\n          <h3>${escapeHtml(item.title)}</h3>\n          <p style="font-size:0.8em; margin-bottom:5px;"><em>Published: ${escapeHtml(item.date)}</em></p>\n          <p>${escapeHtml(item.content)}</p>\n          ${item.url ? `<a href="${escapeHtml(item.url)}" class="read-more">Read More</a>` : ''}\n          ${ isAuthorized ? `<div style="margin-top:.5rem;"><button data-idx="${idx}" class="remove-news">Remove</button></div>` : '' }`;
       container.appendChild(div);
     });
 
-    if (role === 'admin' || role === 'HR'){
+    if (isAuthorized){
       container.querySelectorAll('.remove-news').forEach(btn => btn.addEventListener('click', function(){
         const i = parseInt(this.dataset.idx,10);
         const items = loadJSON(NEWS_KEY);
@@ -84,7 +87,8 @@
   // Portal manager
   function insertPortalItemToDom(item){ if(!item.section) return; const section = document.getElementById(item.section); if(!section) return; const card = document.createElement('div'); card.className='card'; const a = document.createElement('a'); a.href = item.url; a.textContent = item.title; card.appendChild(a); const grid = section.querySelector('.dropdown-grid'); if(grid) grid.appendChild(card); }
 
-  if (role === 'admin' || role === 'HoD' || role === 'HR'){
+  if (isAuthorized && !window.staffPortalManagerInitialized){
+    window.staffPortalManagerInitialized = true;
     const mgr = document.createElement('div'); mgr.style.position = 'fixed'; mgr.style.right='12px'; mgr.style.bottom='12px'; mgr.style.zIndex=2000;
     mgr.innerHTML = `<button id="open-portal-mgr">Manage Portal Items</button>`; document.body.appendChild(mgr);
 
