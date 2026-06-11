@@ -501,8 +501,8 @@
                     
                     const googleAppsScriptUrl = "https://script.google.com/macros/s/AKfycbyIAhmdQJFMf--XcFooht_TQ4hFuMTNCAZ5AFBX8_7SaAG3Cva-FhveABpoGcCNkcBrBA/exec";
                     
-                    // Look at your portal login script keys: it could be stored as 'username' or 'user'
-                    const currentUsername = sessionStorage.getItem('username') || sessionStorage.getItem('user');
+                    // MATCHED TO YOUR LOGIN.JS: Grabbing "loggedInUser" instead of "username"
+                    const currentUsername = sessionStorage.getItem('loggedInUser');
                     
                     // If we found a valid username, build the custom URL!
                     if (currentUsername && currentUsername !== 'Staff') {
