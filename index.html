@@ -44,7 +44,7 @@
         <div id="myWorkDropdown" class="dropdown-section" style="display: none;">
             <div class="dropdown-grid">
                 <div class="card"><a href="todo.html">📝 My Tasks</a></div>
-                <div class="card"><a href="https://www.eskooly.com/bb/EmployeePortal/signin.php" target="_blank">📊 Attendance Tracker</a></div>
+                <div class="card"><a href="#" target="_blank">📊 Attendance Tracker</a></div>
 				<div class="card"><a href="https://teach.classdojo.com/#/login?redirect=%2Flaunchpad" target="_blank">✨ ClassDojo</a></div>
                 <div class="card"><a href="https://app.eu.safetyculture.com/training/learn/home" target="_blank">🧠 Learning & Dev</a></div>
                 <div class="card"><a href="https://mail.google.com" target="_blank">📧 Email</a></div>
@@ -487,6 +487,28 @@
 
     // This ensures it runs after the login script has identified the user
     window.addEventListener('load', updatePortalLinks);
+</script>
+
+	<script>
+    function initializeAttendanceLink() {
+        // 1. Grab the Web App URL you copied from Google Apps Script
+        const googleAppsScriptUrl = "https://script.google.com/macros/s/AKfycbyIAhmdQJFMf--XcFooht_TQ4hFuMTNCAZ5AFBX8_7SaAG3Cva-FhveABpoGcCNkcBrBA/exec";
+        
+        // 2. Fetch the active user username string saved during portal login
+        const currentUsername = sessionStorage.getItem('username') || sessionStorage.getItem('user') || 'Staff';
+        
+        // 3. Combine them into a clean secure parameter link
+        const finalLink = `${googleAppsScriptUrl}?user=${encodeURIComponent(currentUsername)}`;
+        
+        // 4. Update the card link dynamically
+        const trackerLinkElement = document.getElementById('attendance-tracker-link');
+        if (trackerLinkElement) {
+            trackerLinkElement.href = finalLink;
+        }
+    }
+
+    // Run this function as soon as the portal dashboard page loads up
+    window.addEventListener('DOMContentLoaded', initializeAttendanceLink);
 </script>
 
     <footer>
