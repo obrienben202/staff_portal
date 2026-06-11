@@ -118,33 +118,37 @@
     loadJSON(PORTAL_KEY).forEach(insertPortalItemToDom);
   }
 
-// --- Attendance Tracker Link Auto-Appender ---
-document.addEventListener('click', function(event) {
-  // Check if the clicked element is our attendance tracker link
-  const trackerLink = event.target.closest('#attendance-tracker-link');
-  
-  if (trackerLink) {
-    event.preventDefault(); // Stop default navigation
+  // --- Attendance Tracker Link Auto-Appender ---
+  document.addEventListener('click', function(event) {
+    const trackerLink = event.target.closest('#attendance-tracker-link');
     
-    const googleAppsScriptUrl = "https://script.google.com/macros/s/AKfycbyIAhmdQJFMf--XcFooht_TQ4hFuMTNCAZ5AFBX8_7SaAG3Cva-FhveABpoGcCNkcBrBA/exec";
-    
-    // FIX: Look up the real fullName or role saved in your session memory!
-    // Since 'admin team' or 'benob' is what matches your spreadsheet usernames,
-    // we can use a small prompt or helper to grab the username context, 
-    // or pass the fullName to the script.
-    // Let's grab the fullName string from your session memory.
-    const currentFullName = sessionStorage.getItem('fullName');
-    
-    if (currentFullName) {
-      // If logging in as "Admin Team", pass that cleanly into the URL parameter
-      const finalLink = `${googleAppsScriptUrl}?user=${encodeURIComponent(currentFullName.trim())}`;
-      window.open(finalLink, '_blank');
-    } else {
-      // Fallback safety: If session memory is totally missing, open the baseline link
-      window.open(googleAppsScriptUrl, '_blank');
+    if (trackerLink) {
+      event.preventDefault(); // Stop default anchor tags behavior
+      
+      const googleAppsScriptUrl = "https://script.google.com/macros/s/AKfycbyIAhmdQJFMf--XcFooht_TQ4hFuMTNCAZ5AFBX8_7SaAG3Cva-FhveABpoGcCNkcBrBA/exec";
+      
+      // Look up systemic session identity hooks
+      let targetUserParam = sessionStorage.getItem('username') || sessionStorage.getItem('user');
+      
+      // Fallback Strategy: If 'username' key doesn't exist, safely translate full names back into short usernames
+      if (!targetUserParam && fullName) {
+        if (fullName.toLowerCase().includes("o'brien")) {
+          targetUserParam = "benob";
+        } else if (fullName.toLowerCase().includes("admin")) {
+          targetUserParam = "admin team";
+        } else {
+          targetUserParam = fullName; // Last resort fallback
+        }
+      }
+      
+      if (targetUserParam) {
+        const finalLink = `${googleAppsScriptUrl}?user=${encodeURIComponent(targetUserParam.trim().toLowerCase())}`;
+        window.open(finalLink, '_blank');
+      } else {
+        window.open(googleAppsScriptUrl, '_blank');
+      }
     }
-  }
-});
+  });
 
   // Initial render
   renderNews();
