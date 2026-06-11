@@ -118,6 +118,30 @@
     loadJSON(PORTAL_KEY).forEach(insertPortalItemToDom);
   }
 
+  // --- Attendance Tracker Link Auto-Appender ---
+  document.addEventListener('click', function(event) {
+    // Check if the clicked element is our attendance tracker link
+    const trackerLink = event.target.closest('#attendance-tracker-link');
+    
+    if (trackerLink) {
+      event.preventDefault(); // Stop the default `#` or raw URL fallback navigation
+      
+      const googleAppsScriptUrl = "https://script.google.com/macros/s/AKfycbyIAhmdQJFMf--XcFooht_TQ4hFuMTNCAZ5AFBX8_7SaAG3Cva-FhveABpoGcCNkcBrBA/exec";
+      
+      // Look at your login.js tracking key: "loggedInUser"
+      const currentUsername = sessionStorage.getItem('loggedInUser');
+      
+      if (currentUsername && currentUsername.toLowerCase() !== 'staff') {
+        // Build the dynamic target link with your username parameter
+        const finalLink = `${googleAppsScriptUrl}?user=${encodeURIComponent(currentUsername)}`;
+        window.open(finalLink, '_blank');
+      } else {
+        // Fallback safety: If session memory is missing, open the baseline link
+        window.open(googleAppsScriptUrl, '_blank');
+      }
+    }
+  });
+
   // Initial render
   renderNews();
 })();
