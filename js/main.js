@@ -118,7 +118,7 @@
     loadJSON(PORTAL_KEY).forEach(insertPortalItemToDom);
   }
 
- // --- Attendance Tracker Link Auto-Appender ---
+// --- Attendance Tracker Link Auto-Appender ---
 document.addEventListener('click', function(event) {
   // Check if the clicked element is our attendance tracker link
   const trackerLink = event.target.closest('#attendance-tracker-link');
@@ -128,15 +128,19 @@ document.addEventListener('click', function(event) {
     
     const googleAppsScriptUrl = "https://script.google.com/macros/s/AKfycbyIAhmdQJFMf--XcFooht_TQ4hFuMTNCAZ5AFBX8_7SaAG3Cva-FhveABpoGcCNkcBrBA/exec";
     
-    // Safety check: attempt to read both common username session storage variations
-    const currentUsername = sessionStorage.getItem('loggedInUser') || sessionStorage.getItem('username');
+    // FIX: Look up the real fullName or role saved in your session memory!
+    // Since 'admin team' or 'benob' is what matches your spreadsheet usernames,
+    // we can use a small prompt or helper to grab the username context, 
+    // or pass the fullName to the script.
+    // Let's grab the fullName string from your session memory.
+    const currentFullName = sessionStorage.getItem('fullName');
     
-    if (currentUsername) {
-      // Build the dynamic target link with the real username parameter attached cleanly
-      const finalLink = `${googleAppsScriptUrl}?user=${encodeURIComponent(currentUsername.trim())}`;
+    if (currentFullName) {
+      // If logging in as "Admin Team", pass that cleanly into the URL parameter
+      const finalLink = `${googleAppsScriptUrl}?user=${encodeURIComponent(currentFullName.trim())}`;
       window.open(finalLink, '_blank');
     } else {
-      // Fallback safety: If session memory is completely missing, open the baseline link
+      // Fallback safety: If session memory is totally missing, open the baseline link
       window.open(googleAppsScriptUrl, '_blank');
     }
   }
