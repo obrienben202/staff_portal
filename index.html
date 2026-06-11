@@ -44,7 +44,7 @@
         <div id="myWorkDropdown" class="dropdown-section" style="display: none;">
             <div class="dropdown-grid">
                 <div class="card"><a href="todo.html">📝 My Tasks</a></div>
-                <div class="card"><a href="#" onclick="event.preventDefault(); const user = sessionStorage.getItem('loggedInUser') || 'Staff'; window.open('https://script.google.com/macros/s/AKfycbyIAhmdQJFMf--XcFooht_TQ4hFuMTNCAZ5AFBX8_7SaAG3Cva-FhveABpoGcCNkcBrBA/exec?user=' + encodeURIComponent(user), '_blank');" id="attendance-tracker-link">📊 Attendance Tracker</a></div>
+                <div class="card"><a href="#" id="attendance-tracker-link">📊 Attendance Tracker</a></div>
 				<div class="card"><a href="https://teach.classdojo.com/#/login?redirect=%2Flaunchpad" target="_blank">✨ ClassDojo</a></div>
                 <div class="card"><a href="https://app.eu.safetyculture.com/training/learn/home" target="_blank">🧠 Learning & Dev</a></div>
                 <div class="card"><a href="https://mail.google.com" target="_blank">📧 Email</a></div>
@@ -231,6 +231,7 @@
             </ul>
         </div>
     </div>
+	
     <script src="js/main.js"></script>
     
     <script>
@@ -489,40 +490,6 @@
     window.addEventListener('load', updatePortalLinks);
 </script>
 
-	<script>
-        function initializeAttendanceLink() {
-            const trackerLinkElement = document.getElementById('attendance-tracker-link');
-            
-            if (trackerLinkElement) {
-                // Intercept the click so we can grab the fresh login name right when they press it
-                trackerLinkElement.addEventListener('click', function(event) {
-                    // Prevent the basic link from opening instantly
-                    event.preventDefault(); 
-                    
-                    const googleAppsScriptUrl = "https://script.google.com/macros/s/AKfycbyIAhmdQJFMf--XcFooht_TQ4hFuMTNCAZ5AFBX8_7SaAG3Cva-FhveABpoGcCNkcBrBA/exec";
-                    
-                    // MATCHED TO YOUR LOGIN.JS: Grabbing "loggedInUser" instead of "username"
-                    const currentUsername = sessionStorage.getItem('loggedInUser');
-                    
-                    // If we found a valid username, build the custom URL!
-                    if (currentUsername && currentUsername !== 'Staff') {
-                        const finalLink = `${googleAppsScriptUrl}?user=${encodeURIComponent(currentUsername)}`;
-                        window.open(finalLink, '_blank');
-                    } else {
-                        // If session memory is completely empty, open the default link
-                        window.open(googleAppsScriptUrl, '_blank');
-                    }
-                });
-            }
-        }
-
-        // Run this as soon as the page structure is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeAttendanceLink);
-        } else {
-            initializeAttendanceLink();
-        }
-    </script>
 
     <footer>
         <p>© 2025 Staff Portal. All rights reserved.</p>
