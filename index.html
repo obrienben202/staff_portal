@@ -490,26 +490,26 @@
 </script>
 
 	<script>
-    function initializeAttendanceLink() {
-        // 1. Grab the Web App URL you copied from Google Apps Script
-        const googleAppsScriptUrl = "https://script.google.com/macros/s/AKfycbyIAhmdQJFMf--XcFooht_TQ4hFuMTNCAZ5AFBX8_7SaAG3Cva-FhveABpoGcCNkcBrBA/exec";
-        
-        // 2. Fetch the active user username string saved during portal login
-        const currentUsername = sessionStorage.getItem('username') || sessionStorage.getItem('user') || 'Staff';
-        
-        // 3. Combine them into a clean secure parameter link
-        const finalLink = `${googleAppsScriptUrl}?user=${encodeURIComponent(currentUsername)}`;
-        
-        // 4. Update the card link dynamically
-        const trackerLinkElement = document.getElementById('attendance-tracker-link');
-        if (trackerLinkElement) {
-            trackerLinkElement.href = finalLink;
+        function initializeAttendanceLink() {
+            // 1. Grab the Web App URL copied from Google Apps Script
+            const googleAppsScriptUrl = "https://script.google.com/macros/s/AKfycbyIAhmdQJFMf--XcFooht_TQ4hFuMTNCAZ5AFBX8_7SaAG3Cva-FhveABpoGcCNkcBrBA/exec";
+            
+            // 2. Fetch the active user string saved during portal login
+            const currentUsername = sessionStorage.getItem('username') || sessionStorage.getItem('user') || 'Staff';
+            
+            // 3. Combine them into a clean parameter link
+            const finalLink = `${googleAppsScriptUrl}?user=${encodeURIComponent(currentUsername)}`;
+            
+            // 4. Update the card link dynamically by ID
+            const trackerLinkElement = document.getElementById('attendance-tracker-link');
+            if (trackerLinkElement) {
+                trackerLinkElement.href = finalLink;
+            }
         }
-    }
 
-    // Run this function as soon as the portal dashboard page loads up
-    window.addEventListener('DOMContentLoaded', initializeAttendanceLink);
-</script>
+        // Run this as soon as the DOM framework finishes loading up
+        window.addEventListener('DOMContentLoaded', initializeAttendanceLink);
+    </script>
 
     <footer>
         <p>© 2025 Staff Portal. All rights reserved.</p>
